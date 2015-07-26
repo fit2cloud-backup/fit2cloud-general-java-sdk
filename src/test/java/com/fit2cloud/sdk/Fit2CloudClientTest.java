@@ -71,6 +71,14 @@ public class Fit2CloudClientTest {
 	}
 	
 	@Test
+	public void testGetServer() throws Exception {
+		long serverId = 5;
+		Server server = client.getServer(serverId);
+		assert server!=null;
+		System.out.println(server);
+	}
+	
+	@Test
 	public void testExecuteScriptInServer() throws Exception {
 		try {
 			StringBuilder sb = new StringBuilder();

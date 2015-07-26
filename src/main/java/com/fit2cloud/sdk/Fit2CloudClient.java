@@ -112,6 +112,20 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	public Server getServer(long serverId) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/server/" + serverId);
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code == 200) {
+			return new GsonBuilder().create().fromJson(responseString, Server.class);
+		} else {
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
 	public long executeScript(long serverId, String scriptContent)
 			throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, executeScriptInServerUrl);
