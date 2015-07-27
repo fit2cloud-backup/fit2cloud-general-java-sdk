@@ -109,7 +109,7 @@ public class Fit2CloudClientTest {
 	@Test
 	public void testGetEvent() throws Exception {
 		try {
-			long eventId = 2l;
+			long eventId = 86l;
 			Event event = client.getEvent(eventId);
 			System.out.println(new Gson().toJson(event));
 		} catch (Exception e) {
@@ -179,6 +179,26 @@ public class Fit2CloudClientTest {
 	public void testTerminateServer() throws Exception {
 		try {
 			boolean result = client.terminateServer(15);
+			System.out.println(result);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testStartServer() throws Exception {
+		try {
+			boolean result = client.startServer(15);
+			System.out.println(result);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testStopServer() throws Exception {
+		try {
+			boolean result = client.stopServer(15);
 			System.out.println(result);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
