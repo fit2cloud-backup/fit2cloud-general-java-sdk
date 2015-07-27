@@ -1,8 +1,6 @@
 package com.fit2cloud.sdk.model;
 
 
-@SuppressWarnings("restriction")
-@javax.xml.bind.annotation.XmlRootElement
 public class Server {
 	
 	private Long id;
