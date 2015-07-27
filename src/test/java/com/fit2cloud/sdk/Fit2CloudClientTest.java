@@ -10,6 +10,7 @@ import com.fit2cloud.sdk.Fit2CloudClient;
 import com.fit2cloud.sdk.model.Cluster;
 import com.fit2cloud.sdk.model.ClusterParam;
 import com.fit2cloud.sdk.model.ClusterRole;
+import com.fit2cloud.sdk.model.Event;
 import com.fit2cloud.sdk.model.Logging;
 import com.fit2cloud.sdk.model.Server;
 import com.google.gson.Gson;
@@ -100,6 +101,17 @@ public class Fit2CloudClientTest {
 			long eventId = 1l;
 			List<Logging> logs = client.getLoggingsByEventId(eventId);
 			System.out.println(new Gson().toJson(logs));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void testGetEvent() throws Exception {
+		try {
+			long eventId = 2l;
+			Event event = client.getEvent(eventId);
+			System.out.println(new Gson().toJson(event));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

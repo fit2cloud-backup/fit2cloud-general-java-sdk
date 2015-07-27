@@ -14,6 +14,7 @@ import org.scribe.oauth.OAuthService;
 import com.fit2cloud.sdk.model.Cluster;
 import com.fit2cloud.sdk.model.ClusterParam;
 import com.fit2cloud.sdk.model.ClusterRole;
+import com.fit2cloud.sdk.model.Event;
 import com.fit2cloud.sdk.model.Logging;
 import com.fit2cloud.sdk.model.Server;
 import com.google.gson.GsonBuilder;
@@ -160,6 +161,21 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	public Event getEvent(long eventId)
+			throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/event/"+eventId);
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return new GsonBuilder().create().fromJson(responseString, Event.class);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
 	public Long launchServer(long clusterId, long clusterRoleId, long launchConfigurationId) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/launchserver/cluster/"+clusterId+"/clusterrole/"+clusterRoleId+"?launchConfigurationId="+launchConfigurationId);
 		Token accessToken = new Token("", "");
@@ -199,6 +215,7 @@ public class Fit2CloudClient {
 		if (code==200){
 			Type listType = new TypeToken<ArrayList<ClusterParam>>() {}.getType();
 			return new GsonBuilder().create().fromJson(responseString, listType);
+			
 		}else{
 			throw new Fit2CloudException(responseString);
 		}
@@ -213,8 +230,7 @@ public class Fit2CloudClient {
 		int code = response.getCode();
 		String responseString = response.getBody();
 		if (code==200){
-			Type type = new TypeToken<ClusterParam>() {}.getType();
-			return new GsonBuilder().create().fromJson(responseString, type);
+			return new GsonBuilder().create().fromJson(responseString, ClusterParam.class);
 		}else{
 			throw new Fit2CloudException(responseString);
 		}
