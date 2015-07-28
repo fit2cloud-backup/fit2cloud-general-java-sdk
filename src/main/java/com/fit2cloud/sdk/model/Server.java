@@ -13,6 +13,7 @@ public class Server {
 	private String vmId;
 	private String vmStatus;
 	private String vmType;
+	private String vmTypeDescription;
 	private String status;
 	private String region;
 	private String remoteIP;
@@ -206,13 +207,20 @@ public class Server {
 	public void setAgentVersion(String agentVersion) {
 		this.agentVersion = agentVersion;
 	}
+	public String getVmTypeDescription() {
+		return vmTypeDescription;
+	}
+	public void setVmTypeDescription(String vmTypeDescription) {
+		this.vmTypeDescription = vmTypeDescription;
+	}
 	@Override
 	public String toString() {
 		return "Server [id=" + id + ", description=" + description
 				+ ", clusterId=" + clusterId + ", clusterName=" + clusterName
 				+ ", clusterRoleId=" + clusterRoleId + ", clusterRoleName="
 				+ clusterRoleName + ", imageId=" + imageId + ", vmId=" + vmId
-				+ ", vmStatus=" + vmStatus + ", vmType=" + vmType + ", status="
+				+ ", vmStatus=" + vmStatus + ", vmType=" + vmType
+				+ ", vmTypeDescription=" + vmTypeDescription + ", status="
 				+ status + ", region=" + region + ", remoteIP=" + remoteIP
 				+ ", localIP=" + localIP + ", created=" + created
 				+ ", heartbeatStatus=" + heartbeatStatus + ", name=" + name
