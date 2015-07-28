@@ -6,7 +6,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.fit2cloud.sdk.Fit2CloudClient;
 import com.fit2cloud.sdk.model.Cluster;
 import com.fit2cloud.sdk.model.ClusterParam;
 import com.fit2cloud.sdk.model.ClusterRole;
@@ -168,8 +167,8 @@ public class Fit2CloudClientTest {
 	@Test
 	public void testLaunchServer() throws Exception {
 		try {
-			Long result = client.launchServer(2, 2, 17);
-			System.out.println(result);
+			Server server = client.launchServer(2, 2, 17);
+			System.out.println(server);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
@@ -178,7 +177,7 @@ public class Fit2CloudClientTest {
 	@Test
 	public void testTerminateServer() throws Exception {
 		try {
-			boolean result = client.terminateServer(15);
+			boolean result = client.terminateServer(18);
 			System.out.println(result);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -188,7 +187,7 @@ public class Fit2CloudClientTest {
 	@Test
 	public void testStartServer() throws Exception {
 		try {
-			boolean result = client.startServer(15);
+			boolean result = client.startServer(18);
 			System.out.println(result);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -198,7 +197,7 @@ public class Fit2CloudClientTest {
 	@Test
 	public void testStopServer() throws Exception {
 		try {
-			boolean result = client.stopServer(15);
+			boolean result = client.stopServer(18);
 			System.out.println(result);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());

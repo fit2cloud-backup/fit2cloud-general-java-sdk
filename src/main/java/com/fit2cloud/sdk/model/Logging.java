@@ -1,6 +1,5 @@
 package com.fit2cloud.sdk.model;
 
-import javax.xml.bind.annotation.XmlRootElement;
 
 public class Logging {
 	private Long id;
