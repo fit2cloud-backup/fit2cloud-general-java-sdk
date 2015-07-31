@@ -187,8 +187,8 @@ public class Fit2CloudClientTest {
 	@Test
 	public void testStartServer() throws Exception {
 		try {
-			boolean result = client.startServer(18);
-			System.out.println(result);
+			Server server = client.startServer(18);
+			System.out.println(server);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
