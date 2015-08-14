@@ -11,6 +11,7 @@ import com.fit2cloud.sdk.model.ClusterParam;
 import com.fit2cloud.sdk.model.ClusterRole;
 import com.fit2cloud.sdk.model.Event;
 import com.fit2cloud.sdk.model.Logging;
+import com.fit2cloud.sdk.model.Script;
 import com.fit2cloud.sdk.model.Server;
 import com.google.gson.Gson;
 
@@ -198,6 +199,64 @@ public class Fit2CloudClientTest {
 	public void testStopServer() throws Exception {
 		try {
 			boolean result = client.stopServer(18);
+			System.out.println(result);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testGetScripts() throws Exception {
+		try {
+			List<Script> scripts = client.getScripts(null, null);
+			System.out.println(new Gson().toJson(scripts));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testGetScript() throws Exception {
+		try {
+			long scriptId = 1l;
+			Script script = client.getScript(scriptId);
+			System.out.println(script);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testAddScript() throws Exception {
+		try {
+			String scriptText = "#!/bin/bash\r\n\r\n#列出系统进程\r\nps aux\r\n";
+			String description = "script description";
+			String name = "testScript";
+			Long scriptId = client.addScript(name, description, scriptText);
+			System.out.println(scriptId);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testEditScript() throws Exception {
+		try {
+			String scriptText = "#!/bin/bash\r\n\r\n#列出系统进程[编辑]\r\nps aux\r\n";
+			String description = "edit script description";
+			long scriptId = 1l;
+			boolean result = client.editScript(scriptId, description, scriptText);
+			System.out.println(result);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testDeleteScript() throws Exception {
+		try {
+			long scriptId = 1l;
+			boolean result = client.deleteScript(scriptId);
 			System.out.println(result);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());

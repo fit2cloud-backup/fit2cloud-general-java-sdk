@@ -16,6 +16,7 @@ import com.fit2cloud.sdk.model.ClusterParam;
 import com.fit2cloud.sdk.model.ClusterRole;
 import com.fit2cloud.sdk.model.Event;
 import com.fit2cloud.sdk.model.Logging;
+import com.fit2cloud.sdk.model.Script;
 import com.fit2cloud.sdk.model.Server;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -283,6 +284,100 @@ public class Fit2CloudClient {
 	
 	public boolean deleteClusterParam(long clusterId, String name) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/cluster/"+clusterId+"/param/delete?name="+name);
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return "true".equals(responseString);
+		}else{
+			throw new Fit2CloudException(response.getBody());
+		}
+	}
+	
+	/**
+	 * pageSize和pageNum可以不传,不传则返回所有脚本列表
+	 * 
+	 * @param pageSize
+	 * @param pageNum
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public List<Script> getScripts(Integer pageSize, Integer pageNum) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/scripts");
+		if(pageSize != null && pageSize.intValue() > 0) {
+			request.addBodyParameter("pageSize", String.valueOf(pageSize));
+		}
+		if(pageNum != null && pageNum.intValue() > 0) {
+			request.addBodyParameter("pageNum", String.valueOf(pageNum));
+		}
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		System.out.println("responseString >> "+responseString);
+		if (code==200){
+			Type listType = new TypeToken<ArrayList<Script>>() {}.getType();
+			return new GsonBuilder().create().fromJson(responseString, listType);
+			
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
+	public Script getScript (long scriptId) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/script/"+scriptId);
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return new GsonBuilder().create().fromJson(responseString, Script.class);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+
+	public Long addScript(String name, String description, String scriptText) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/script/add");
+		request.addBodyParameter("name", name);
+		request.addBodyParameter("description", description);
+		request.addBodyParameter("scriptText", scriptText);
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return Long.parseLong(responseString);
+		}else{
+			throw new Fit2CloudException(response.getBody());
+		}
+	}
+	
+	public boolean editScript(long scriptId, String description, String scriptText) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/script/"+scriptId+"/update");
+		request.addBodyParameter("description", description);
+		request.addBodyParameter("scriptText", scriptText);
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return "true".equals(responseString);
+		}else{
+			throw new Fit2CloudException(response.getBody());
+		}
+	}
+	
+	public boolean deleteScript(long scriptId) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/script/"+scriptId+"/delete");
 		Token accessToken = new Token("", "");
 		service.signRequest(accessToken, request);
 		Response response = request.send();
