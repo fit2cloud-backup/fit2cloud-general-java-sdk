@@ -18,6 +18,7 @@ import com.fit2cloud.sdk.model.Event;
 import com.fit2cloud.sdk.model.Logging;
 import com.fit2cloud.sdk.model.Script;
 import com.fit2cloud.sdk.model.Server;
+import com.fit2cloud.sdk.model.ViewScriptlog;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
@@ -340,7 +341,7 @@ public class Fit2CloudClient {
 			throw new Fit2CloudException(responseString);
 		}
 	}
-
+	
 	public Long addScript(String name, String description, String scriptText) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/script/add");
 		request.addBodyParameter("name", name);
@@ -387,6 +388,83 @@ public class Fit2CloudClient {
 			return "true".equals(responseString);
 		}else{
 			throw new Fit2CloudException(response.getBody());
+		}
+	}
+	
+	/**
+	 * 所有搜索条件均非必要, 若所有搜索条件均为null或0,则返回该用户下所有执行日志
+	 * 
+	 * @param clusterId
+	 * @param clusterRoleId
+	 * @param serverId
+	 * @param scriptId
+	 * @param status
+	 * @param pageSize
+	 * @param pageNum
+	 * @param sort
+	 * @param order
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public List<ViewScriptlog> getLoggings(Long clusterId, Long clusterRoleId, Long serverId, Long scriptId, String status, Integer pageSize, Integer pageNum, String sort, String order) throws Fit2CloudException {
+		StringBuffer requestParamSb = new StringBuffer();
+		if(clusterId != null && clusterId.intValue() > 0) {
+			requestParamSb.append("clusterId=");
+			requestParamSb.append(clusterId);
+			requestParamSb.append("&");
+		}
+		if(clusterRoleId != null && clusterRoleId.intValue() > 0) {
+			requestParamSb.append("clusterRoleId=");
+			requestParamSb.append(clusterRoleId);
+			requestParamSb.append("&");
+		}
+		if(serverId != null && serverId.intValue() > 0) {
+			requestParamSb.append("serverId=");
+			requestParamSb.append(serverId);
+			requestParamSb.append("&");
+		}
+		if(scriptId != null && scriptId.intValue() > 0) {
+			requestParamSb.append("scriptId=");
+			requestParamSb.append(scriptId);
+			requestParamSb.append("&");
+		}
+		if(status != null && status.trim().length() > 0) {
+			requestParamSb.append("status=");
+			requestParamSb.append(status);
+			requestParamSb.append("&");
+		}
+		if(sort != null && sort.trim().length() > 0) {
+			requestParamSb.append("sort=");
+			requestParamSb.append(sort);
+			requestParamSb.append("&");
+		}
+		if(order != null && order.trim().length() > 0) {
+			requestParamSb.append("order=");
+			requestParamSb.append(order);
+			requestParamSb.append("&");
+		}
+		String requestParam = requestParamSb.toString();
+		if(requestParam != null && requestParam.endsWith("&")) {
+			requestParam = requestParam.substring(0, requestParam.length() - 1);
+		}
+		
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/event/loggings?"+requestParam);
+		if(pageSize != null && pageSize.intValue() > 0) {
+			request.addBodyParameter("pageSize", String.valueOf(pageSize));
+		}
+		if(pageNum != null && pageNum.intValue() > 0) {
+			request.addBodyParameter("pageNum", String.valueOf(pageNum));
+		}
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			Type listType = new TypeToken<ArrayList<ViewScriptlog>>() {}.getType();
+			return new GsonBuilder().create().fromJson(responseString, listType);
+		}else{
+			throw new Fit2CloudException(responseString);
 		}
 	}
 }

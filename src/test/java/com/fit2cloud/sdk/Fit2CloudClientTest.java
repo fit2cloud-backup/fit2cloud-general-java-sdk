@@ -13,6 +13,7 @@ import com.fit2cloud.sdk.model.Event;
 import com.fit2cloud.sdk.model.Logging;
 import com.fit2cloud.sdk.model.Script;
 import com.fit2cloud.sdk.model.Server;
+import com.fit2cloud.sdk.model.ViewScriptlog;
 import com.google.gson.Gson;
 
 public class Fit2CloudClientTest {
@@ -263,4 +264,22 @@ public class Fit2CloudClientTest {
 		}
 	}
 
+	@Test
+	public void testGetLoggings() throws Exception {
+		try {
+			String order = "desc";
+			String sort = "usedTime";
+			Integer pageNum = null;
+			Integer pageSize = null;
+			String status = "failed";
+			Long scriptId = null;
+			Long serverId = null;
+			Long clusterRoleId = null;
+			Long clusterId = null;
+			List<ViewScriptlog> loggings = client.getLoggings(clusterId, clusterRoleId, serverId, scriptId, status, pageSize, pageNum, sort, order);
+			System.out.println(new Gson().toJson(loggings));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
 }
