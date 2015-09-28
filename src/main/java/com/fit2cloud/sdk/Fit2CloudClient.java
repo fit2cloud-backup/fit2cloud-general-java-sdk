@@ -1,6 +1,8 @@
 package com.fit2cloud.sdk;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +13,8 @@ import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
+import com.fit2cloud.sdk.model.ApplicationDeployment;
+import com.fit2cloud.sdk.model.ApplicationRevision;
 import com.fit2cloud.sdk.model.Cluster;
 import com.fit2cloud.sdk.model.ClusterParam;
 import com.fit2cloud.sdk.model.ClusterRole;
@@ -18,6 +22,7 @@ import com.fit2cloud.sdk.model.Event;
 import com.fit2cloud.sdk.model.Logging;
 import com.fit2cloud.sdk.model.Script;
 import com.fit2cloud.sdk.model.Server;
+import com.fit2cloud.sdk.model.Tag;
 import com.fit2cloud.sdk.model.ViewScriptlog;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -306,19 +311,27 @@ public class Fit2CloudClient {
 	 * @throws Fit2CloudException
 	 */
 	public List<Script> getScripts(Integer pageSize, Integer pageNum) throws Fit2CloudException {
-		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/scripts");
+		StringBuffer requestParamSb = new StringBuffer();
 		if(pageSize != null && pageSize.intValue() > 0) {
-			request.addBodyParameter("pageSize", String.valueOf(pageSize));
+			requestParamSb.append("pageSize=");
+			requestParamSb.append(pageSize);
+			requestParamSb.append("&");
 		}
 		if(pageNum != null && pageNum.intValue() > 0) {
-			request.addBodyParameter("pageNum", String.valueOf(pageNum));
+			requestParamSb.append("pageNum=");
+			requestParamSb.append(pageNum);
+			requestParamSb.append("&");
 		}
+		String requestParam = requestParamSb.toString();
+		if(requestParam != null && requestParam.endsWith("&")) {
+			requestParam = requestParam.substring(0, requestParam.length() - 1);
+		}
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/scripts?"+requestParam);
 		Token accessToken = new Token("", "");
 		service.signRequest(accessToken, request);
 		Response response = request.send();
 		int code = response.getCode();
 		String responseString = response.getBody();
-		System.out.println("responseString >> "+responseString);
 		if (code==200){
 			Type listType = new TypeToken<ArrayList<Script>>() {}.getType();
 			return new GsonBuilder().create().fromJson(responseString, listType);
@@ -443,18 +456,22 @@ public class Fit2CloudClient {
 			requestParamSb.append(order);
 			requestParamSb.append("&");
 		}
+		if(pageSize != null && pageSize.intValue() > 0) {
+			requestParamSb.append("pageSize=");
+			requestParamSb.append(pageSize);
+			requestParamSb.append("&");
+		}
+		if(pageNum != null && pageNum.intValue() > 0) {
+			requestParamSb.append("pageNum=");
+			requestParamSb.append(pageNum);
+			requestParamSb.append("&");
+		}
 		String requestParam = requestParamSb.toString();
 		if(requestParam != null && requestParam.endsWith("&")) {
 			requestParam = requestParam.substring(0, requestParam.length() - 1);
 		}
 		
 		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/event/loggings?"+requestParam);
-		if(pageSize != null && pageSize.intValue() > 0) {
-			request.addBodyParameter("pageSize", String.valueOf(pageSize));
-		}
-		if(pageNum != null && pageNum.intValue() > 0) {
-			request.addBodyParameter("pageNum", String.valueOf(pageNum));
-		}
 		Token accessToken = new Token("", "");
 		service.signRequest(accessToken, request);
 		Response response = request.send();
@@ -467,4 +484,244 @@ public class Fit2CloudClient {
 			throw new Fit2CloudException(responseString);
 		}
 	}
+	
+	public List<Tag> getTags(Long clusterId, Long clusterRoleId, Long serverId, String tagName, Integer pageSize, Integer pageNum) throws Fit2CloudException {
+		StringBuffer requestParamSb = new StringBuffer();
+		if(clusterId != null && clusterId.intValue() > 0) {
+			requestParamSb.append("clusterId=");
+			requestParamSb.append(clusterId);
+			requestParamSb.append("&");
+		}
+		if(clusterRoleId != null && clusterRoleId.intValue() > 0) {
+			requestParamSb.append("clusterRoleId=");
+			requestParamSb.append(clusterRoleId);
+			requestParamSb.append("&");
+		}
+		if(serverId != null && serverId.intValue() > 0) {
+			requestParamSb.append("serverId=");
+			requestParamSb.append(serverId);
+			requestParamSb.append("&");
+		}
+		if(tagName != null && tagName.trim().length() > 0) {
+			requestParamSb.append("tagName=");
+			requestParamSb.append(tagName.trim());
+			requestParamSb.append("&");
+		}
+		if(pageSize != null && pageSize.intValue() > 0) {
+			requestParamSb.append("pageSize=");
+			requestParamSb.append(pageSize);
+			requestParamSb.append("&");
+		}
+		if(pageNum != null && pageNum.intValue() > 0) {
+			requestParamSb.append("pageNum=");
+			requestParamSb.append(pageNum);
+			requestParamSb.append("&");
+		}
+		String requestParam = requestParamSb.toString();
+		if(requestParam != null && requestParam.endsWith("&")) {
+			requestParam = requestParam.substring(0, requestParam.length() - 1);
+		}
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/tags?"+requestParam);
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			Type listType = new TypeToken<ArrayList<Tag>>() {}.getType();
+			return new GsonBuilder().create().fromJson(responseString, listType);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
+	public Tag saveTag(Long serverId, String tagName, String tagValue) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/tags/save");
+		if(serverId != null && serverId.intValue() > 0) {
+			request.addBodyParameter("serverId", String.valueOf(serverId));
+		}
+		if(tagName != null && tagName.trim().length() > 0) {
+			request.addBodyParameter("tagName", tagName.trim());
+		}
+		if(tagValue != null && tagValue.trim().length() > 0) {
+			request.addBodyParameter("tagValue", tagValue.trim());
+		}
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return new GsonBuilder().create().fromJson(responseString, Tag.class);
+		}else{
+			throw new Fit2CloudException(response.getBody());
+		}
+	}
+	
+	public boolean deleteTag(Long serverId, String tagName) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/tags/delete");
+		if(serverId != null && serverId.intValue() > 0) {
+			request.addBodyParameter("serverId", String.valueOf(serverId));
+		}
+		if(tagName != null && tagName.trim().length() > 0) {
+			request.addBodyParameter("tagName", tagName.trim());
+		}
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return "true".equals(responseString);
+		}else{
+			throw new Fit2CloudException(response.getBody());
+		}
+	}
+	
+	/**
+	 * @param clusterId
+	 * @param clusterRoleId
+	 * @param tagName	required
+	 * @param tagValue
+	 * @param pageSize
+	 * @param pageNum
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public List<Server> getServersByTag(Long clusterId, Long clusterRoleId, String tagName, String tagValue, Integer pageSize, Integer pageNum) throws Fit2CloudException {
+		StringBuffer requestParamSb = new StringBuffer();
+		if(clusterId != null && clusterId.intValue() > 0) {
+			requestParamSb.append("clusterId=");
+			requestParamSb.append(clusterId);
+			requestParamSb.append("&");
+		}
+		if(clusterRoleId != null && clusterRoleId.intValue() > 0) {
+			requestParamSb.append("clusterRoleId=");
+			requestParamSb.append(clusterRoleId);
+			requestParamSb.append("&");
+		}
+		if(tagName != null && tagName.trim().length() > 0) {
+			requestParamSb.append("tagName=");
+			requestParamSb.append(tagName);
+			requestParamSb.append("&");
+		}
+		if(tagValue != null && tagValue.trim().length() > 0) {
+			requestParamSb.append("tagValue=");
+			try {
+				requestParamSb.append(URLEncoder.encode(tagValue, "UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			requestParamSb.append("&");
+		}
+		if(pageSize != null && pageSize.intValue() > 0) {
+			requestParamSb.append("pageSize=");
+			requestParamSb.append(pageSize);
+			requestParamSb.append("&");
+		}
+		if(pageNum != null && pageNum.intValue() > 0) {
+			requestParamSb.append("pageNum=");
+			requestParamSb.append(pageNum);
+			requestParamSb.append("&");
+		}
+		String requestParam = requestParamSb.toString();
+		if(requestParam != null && requestParam.endsWith("&")) {
+			requestParam = requestParam.substring(0, requestParam.length() - 1);
+		}
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/tags/servers?"+requestParam);
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			Type listType = new TypeToken<ArrayList<Server>>() {}.getType();
+			return new GsonBuilder().create().fromJson(responseString, listType);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
+	public ApplicationRevision addApplicationRevisionFromOSS(Long applicationId, String name, String description, Long applicationRepositoryId, String ossObject) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/deploy/app/"+applicationId+"/revision/add.json");
+		request.addBodyParameter("revName", name);
+		request.addBodyParameter("revDescription", description);
+		request.addBodyParameter("repoId", String.valueOf(applicationRepositoryId));
+		request.addBodyParameter("ossObject", ossObject);
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return new GsonBuilder().create().fromJson(responseString, ApplicationRevision.class);
+		}else{
+			throw new Fit2CloudException(response.getBody());
+		}
+	}
+	
+	public ApplicationRevision addApplicationRevisionFromNexus(Long applicationId, String name, String description, Long applicationRepositoryId, String nexusArtifact) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/deploy/app/"+applicationId+"/revision/add.json");
+		request.addBodyParameter("revName", name);
+		request.addBodyParameter("revDescription", description);
+		request.addBodyParameter("repoId", String.valueOf(applicationRepositoryId));
+		request.addBodyParameter("nexusArtifact", nexusArtifact);
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return new GsonBuilder().create().fromJson(responseString, ApplicationRevision.class);
+		}else{
+			throw new Fit2CloudException(response.getBody());
+		}
+	}
+	
+	public ApplicationRevision addApplicationRevision(Long applicationId, String name, String description, String location) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/deploy/app/"+applicationId+"/revision/add.json");
+		request.addBodyParameter("revName", name);
+		request.addBodyParameter("revDescription", description);
+		request.addBodyParameter("location", location);
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return new GsonBuilder().create().fromJson(responseString, ApplicationRevision.class);
+		}else{
+			throw new Fit2CloudException(response.getBody());
+		}
+	}
+	
+	public ApplicationDeployment addDeployment(Long applicationRevisionId, Long clusterId, Long clusterRoleId, Long serverId, String deployPolicy, String description) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/deploy/app/revision/"+applicationRevisionId+"/deployment/add.json");
+		request.addBodyParameter("clusterId", String.valueOf(clusterId));
+		if(clusterRoleId != null && clusterRoleId.longValue() > 0) {
+			request.addBodyParameter("clusterRoleId", String.valueOf(clusterRoleId));
+		}
+		if(serverId != null && serverId.longValue() > 0) {
+			request.addBodyParameter("serverId", String.valueOf(serverId));
+		}
+		request.addBodyParameter("deployPolicy", deployPolicy);
+		request.addBodyParameter("description", description);
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return new GsonBuilder().create().fromJson(responseString, ApplicationDeployment.class);
+		}else{
+			throw new Fit2CloudException(response.getBody());
+		}
+	}
+	
 }
