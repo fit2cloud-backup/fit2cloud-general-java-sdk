@@ -13,7 +13,9 @@ import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
+import com.fit2cloud.sdk.model.Application;
 import com.fit2cloud.sdk.model.ApplicationDeployment;
+import com.fit2cloud.sdk.model.ApplicationRepo;
 import com.fit2cloud.sdk.model.ApplicationRevision;
 import com.fit2cloud.sdk.model.Cluster;
 import com.fit2cloud.sdk.model.ClusterParam;
@@ -644,48 +646,14 @@ public class Fit2CloudClient {
 		}
 	}
 	
-	public ApplicationRevision addApplicationRevisionFromOSS(Long applicationId, String name, String description, Long applicationRepositoryId, String ossObject) throws Fit2CloudException {
-		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/deploy/app/"+applicationId+"/revision/add.json");
+	public ApplicationRevision addApplicationRevision(String name, String description, String applicationName, String repositoryName, String location) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/deploy/app/revision/add.json");
 		request.addBodyParameter("revName", name);
 		request.addBodyParameter("revDescription", description);
-		request.addBodyParameter("repoId", String.valueOf(applicationRepositoryId));
-		request.addBodyParameter("ossObject", ossObject);
-		request.setCharset("UTF-8");
-		Token accessToken = new Token("", "");
-		service.signRequest(accessToken, request);
-		Response response = request.send();
-		int code = response.getCode();
-		String responseString = response.getBody();
-		if (code==200){
-			return new GsonBuilder().create().fromJson(responseString, ApplicationRevision.class);
-		}else{
-			throw new Fit2CloudException(response.getBody());
+		request.addBodyParameter("appName", applicationName);
+		if(repositoryName != null) {
+			request.addBodyParameter("repoName", repositoryName);
 		}
-	}
-	
-	public ApplicationRevision addApplicationRevisionFromNexus(Long applicationId, String name, String description, Long applicationRepositoryId, String nexusArtifact) throws Fit2CloudException {
-		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/deploy/app/"+applicationId+"/revision/add.json");
-		request.addBodyParameter("revName", name);
-		request.addBodyParameter("revDescription", description);
-		request.addBodyParameter("repoId", String.valueOf(applicationRepositoryId));
-		request.addBodyParameter("nexusArtifact", nexusArtifact);
-		request.setCharset("UTF-8");
-		Token accessToken = new Token("", "");
-		service.signRequest(accessToken, request);
-		Response response = request.send();
-		int code = response.getCode();
-		String responseString = response.getBody();
-		if (code==200){
-			return new GsonBuilder().create().fromJson(responseString, ApplicationRevision.class);
-		}else{
-			throw new Fit2CloudException(response.getBody());
-		}
-	}
-	
-	public ApplicationRevision addApplicationRevision(Long applicationId, String name, String description, String location) throws Fit2CloudException {
-		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/deploy/app/"+applicationId+"/revision/add.json");
-		request.addBodyParameter("revName", name);
-		request.addBodyParameter("revDescription", description);
 		request.addBodyParameter("location", location);
 		request.setCharset("UTF-8");
 		Token accessToken = new Token("", "");
@@ -700,11 +668,13 @@ public class Fit2CloudClient {
 		}
 	}
 	
-	public ApplicationDeployment addDeployment(Long applicationRevisionId, Long clusterId, Long clusterRoleId, Long serverId, String deployPolicy, String description) throws Fit2CloudException {
-		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/deploy/app/revision/"+applicationRevisionId+"/deployment/add.json");
-		request.addBodyParameter("clusterId", String.valueOf(clusterId));
-		if(clusterRoleId != null && clusterRoleId.longValue() > 0) {
-			request.addBodyParameter("clusterRoleId", String.valueOf(clusterRoleId));
+	public ApplicationDeployment addDeployment(String applicationName, String applicationRevisionName, String clusterName, String clusterRoleName, Long serverId, String deployPolicy, String description) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/deploy/app/revision/deployment/add.json");
+		request.addBodyParameter("appName", applicationName);
+		request.addBodyParameter("revName", applicationRevisionName);
+		request.addBodyParameter("clusterName", clusterName);
+		if(clusterRoleName != null && clusterRoleName.trim().length() > 0) {
+			request.addBodyParameter("clusterRoleName", clusterRoleName);
 		}
 		if(serverId != null && serverId.longValue() > 0) {
 			request.addBodyParameter("serverId", String.valueOf(serverId));
@@ -721,6 +691,34 @@ public class Fit2CloudClient {
 			return new GsonBuilder().create().fromJson(responseString, ApplicationDeployment.class);
 		}else{
 			throw new Fit2CloudException(response.getBody());
+		}
+	}
+	
+	public Application getApplication(String applicationName) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/deploy/app/search?name=" + applicationName);
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return new GsonBuilder().create().fromJson(responseString, Application.class);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
+	public ApplicationRepo getApplicationRepo(String applicationRepoName) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/deploy/repo/search?name=" + applicationRepoName);
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return new GsonBuilder().create().fromJson(responseString, ApplicationRepo.class);
+		}else{
+			throw new Fit2CloudException(responseString);
 		}
 	}
 	

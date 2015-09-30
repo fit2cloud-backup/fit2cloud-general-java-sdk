@@ -6,8 +6,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.fit2cloud.sdk.model.Application;
 import com.fit2cloud.sdk.model.ApplicationDeployPolicyType;
 import com.fit2cloud.sdk.model.ApplicationDeployment;
+import com.fit2cloud.sdk.model.ApplicationRepo;
 import com.fit2cloud.sdk.model.ApplicationRevision;
 import com.fit2cloud.sdk.model.Cluster;
 import com.fit2cloud.sdk.model.ClusterParam;
@@ -345,43 +347,14 @@ public class Fit2CloudClientTest {
 	}
 	
 	@Test
-	public void testAddApplicationRevisionFromOSS() throws Exception {
-		try {
-			Long applicationId = 1l;
-			String name = "v1.7";
-			String description = "test desc";
-			Long applicationRepositoryId = 3l;
-			String ossObject = "WordPressTest/wordpress-4.2-bin-201502151613-1.zip";
-			ApplicationRevision revision = client.addApplicationRevisionFromOSS(applicationId, name, description, applicationRepositoryId, ossObject);
-			System.out.println(new Gson().toJson(revision));
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testAddApplicationRevisionFromNexus() throws Exception {
-		try {
-			Long applicationId = 1l;
-			String name = "v1.9";
-			String description = "test desc";
-			Long applicationRepositoryId = 4l;
-			String nexusArtifact = "http://repository-proxy.fit2cloud.com:8080/content/repositories/releases/com/fit2cloud/example/wordpress/4.1/wordpress-4.1-bin-20150119-1211.zip";
-			ApplicationRevision revision = client.addApplicationRevisionFromNexus(applicationId, name, description, applicationRepositoryId, nexusArtifact);
-			System.out.println(new Gson().toJson(revision));
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-	}
-	
-	@Test
 	public void testAddApplicationRevision() throws Exception {
 		try {
-			Long applicationId = 1l;
-			String name = "v2.0";
+			String name = "v2.2";
 			String description = "test desc";
-			String location = "http://repository-proxy.fit2cloud.com:8080/content/repositories/releases/com/fit2cloud/example/wordpress/4.1/wordpress-4.1-bin-20150119-1211.zip";
-			ApplicationRevision revision = client.addApplicationRevision(applicationId, name, description, location);
+			String location = "WordPressTest/wordpress-4.2-bin-201502151613-1.zip";
+			String applicationName = "testapp";
+			String repositoryName = "key-139-oss-wp";
+			ApplicationRevision revision = client.addApplicationRevision(name, description, applicationName, repositoryName, location);
 			System.out.println(new Gson().toJson(revision));
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -392,13 +365,36 @@ public class Fit2CloudClientTest {
 	public void testAddDeployment() throws Exception {
 		try {
 			String description = "test desc";
-			Long applicationRevisionId = 13l;
-			Long clusterId = 7l;
-			Long clusterRoleId = null;
-			Long serverId = 0l;
+			Long serverId = null;
 			String deployPolicy = ApplicationDeployPolicyType.ONE_AT_A_TIME;
-			ApplicationDeployment deployment = client.addDeployment(applicationRevisionId, clusterId, clusterRoleId, serverId, deployPolicy, description);
+			String applicationName = "testapp";
+			String applicationRevisionName = "v2.2";
+			String clusterName = "cluster-1";
+			String clusterRoleName = null;
+			ApplicationDeployment deployment = client.addDeployment(applicationName, applicationRevisionName, clusterName, clusterRoleName, serverId, deployPolicy, description);
 			System.out.println(new Gson().toJson(deployment));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testGetApplication() throws Exception {
+		try {
+			String applicationName = "testapp";
+			Application app = client.getApplication(applicationName);
+			System.out.println(new Gson().toJson(app));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testGetApplicationRepo() throws Exception {
+		try {
+			String applicationRepoName = "key-139-oss-wp";
+			ApplicationRepo appRepo = client.getApplicationRepo(applicationRepoName);
+			System.out.println(new Gson().toJson(appRepo));
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
