@@ -183,9 +183,19 @@ public class Fit2CloudClientTest {
 	}
 	
 	@Test
+	public void testLaunchServerAsync() throws Exception {
+		try {
+			Server server = client.launchServerAsync(2, 2, 37);
+			System.out.println(server);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	@Test
 	public void testTerminateServer() throws Exception {
 		try {
-			boolean result = client.terminateServer(18);
+			boolean result = client.terminateServer(193);
 			System.out.println(result);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());

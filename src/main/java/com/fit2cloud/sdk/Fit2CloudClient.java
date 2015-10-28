@@ -199,6 +199,20 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	public Server launchServerAsync(long clusterId, long clusterRoleId, long launchConfigurationId) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/launchserver/async/cluster/"+clusterId+"/clusterrole/"+clusterRoleId+"?launchConfigurationId="+launchConfigurationId);
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return new GsonBuilder().create().fromJson(responseString, Server.class);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
 	public boolean terminateServer(long serverId) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/terminateserver/server/"+serverId);
 		Token accessToken = new Token("", "");
