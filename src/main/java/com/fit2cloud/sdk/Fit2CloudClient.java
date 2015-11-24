@@ -36,6 +36,11 @@ public class Fit2CloudClient {
 	private String executeScriptInServerUrl;
 	private String getLoggingUrl;
 	
+	/**
+	 * @param consumerKey	FIT2CLOUD用户的consumerKey,可以通过FIT2CLOUD控制台的"帐号信息"中获取
+	 * @param secret	FIT2CLOUD用户的SecretKey,可以通过FIT2CLOUD控制台的"帐号信息"中获取
+	 * @param restApiUrl	FIT2CLOUD用户的API Endpoint,可以通过FIT2CLOUD控制台的"帐号信息"中获取
+	 */
 	public Fit2CloudClient(String consumerKey, String secret, String restApiUrl){
 		if(restApiUrl != null && restApiUrl.endsWith("/")) {
 			restApiUrl = restApiUrl.substring(0, restApiUrl.length()-1);
@@ -46,6 +51,12 @@ public class Fit2CloudClient {
 		service = new ServiceBuilder().provider(Fit2CloudApi.class).apiKey(consumerKey).apiSecret(secret).build();
 	}
 	
+	/**
+	 * 获取当前用户所有集群信息
+	 * 
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public List<Cluster> getClusters() throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/clusters");
 		Token accessToken = new Token("", "");
@@ -61,6 +72,13 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 获取指定集群信息
+	 * 
+	 * @param clusterId	集群ID
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public Cluster getCluster(long clusterId) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/cluster/" + clusterId);
 		Token accessToken = new Token("", "");
@@ -75,6 +93,13 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 获取指定集群下所有虚机组信息
+	 * 
+	 * @param clusterId	集群ID
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public List<ClusterRole> getClusterRoles(long clusterId) throws Fit2CloudException{
 		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint +  "/cluster/" + clusterId+ "/roles");
 		Token accessToken = new Token("", "");
@@ -93,8 +118,8 @@ public class Fit2CloudClient {
 	/**
 	 * 所有参数均非必须, 若所有参数均为null, 则返回当前用户拥有的所有虚机
 	 * 
-	 * @param clusterId
-	 * @param clusterRoleId
+	 * @param clusterId	集群ID
+	 * @param clusterRoleId	虚机组ID
 	 * @param sort	排序字段
 	 * @param order	排序方式
 	 * @param pageSize	分页大小
@@ -122,6 +147,13 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 获取指定虚机信息
+	 * 
+	 * @param serverId	虚机ID
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public Server getServer(long serverId) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/server/" + serverId);
 		Token accessToken = new Token("", "");
@@ -136,6 +168,14 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 在指定虚机上执行指定脚本
+	 * 
+	 * @param serverId	虚机ID
+	 * @param scriptContent	脚本内容
+	 * @return	返回执行脚本事件ID, 可根据此ID获取返回的所有执行日志
+	 * @throws Fit2CloudException
+	 */
 	public long executeScript(long serverId, String scriptContent)
 			throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, executeScriptInServerUrl);
@@ -154,6 +194,12 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 	获取事件返回的所有日志信息(如执行脚本事件)
+	 * @param eventId	事件ID
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public List<Logging> getLoggingsByEventId(long eventId)
 			throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.GET, getLoggingUrl + eventId);
@@ -170,6 +216,12 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 获取指定事件信息, 可以获取事件的响应代码/执行时间等信息
+	 * @param eventId	事件ID
+	 * @return	
+	 * @throws Fit2CloudException
+	 */
 	public Event getEvent(long eventId)
 			throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/event/"+eventId);
@@ -185,6 +237,15 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 创建虚机
+	 * 
+	 * @param clusterId	虚机所在的集群
+	 * @param clusterRoleId	虚机所在的虚机组
+	 * @param launchConfigurationId	创建虚机所使用的模板
+	 * @return	创建后的虚机信息
+	 * @throws Fit2CloudException
+	 */
 	public Server launchServer(long clusterId, long clusterRoleId, long launchConfigurationId) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/launchserver/cluster/"+clusterId+"/clusterrole/"+clusterRoleId+"?launchConfigurationId="+launchConfigurationId);
 		Token accessToken = new Token("", "");
@@ -199,6 +260,15 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 创建虚机. 此接口将立刻返回虚机ID,而后台将异步创建虚机. 之后通过返回的虚机信息中的ID来查询完整的虚机信息
+	 * 
+	 * @param clusterId	虚机所在的集群
+	 * @param clusterRoleId	虚机所在的虚机组
+	 * @param launchConfigurationId	创建虚机所使用的模板
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public Server launchServerAsync(long clusterId, long clusterRoleId, long launchConfigurationId) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/launchserver/async/cluster/"+clusterId+"/clusterrole/"+clusterRoleId+"?launchConfigurationId="+launchConfigurationId);
 		Token accessToken = new Token("", "");
@@ -213,6 +283,13 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 删除虚机
+	 * 
+	 * @param serverId	虚机ID
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public boolean terminateServer(long serverId) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/terminateserver/server/"+serverId);
 		Token accessToken = new Token("", "");
@@ -227,6 +304,13 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 启动处于停止中状态的虚机
+	 * 
+	 * @param serverId	虚机ID
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public Server startServer(long serverId) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/startserver/server/"+serverId);
 		Token accessToken = new Token("", "");
@@ -241,6 +325,13 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 停止虚机
+	 * 
+	 * @param serverId	虚机ID
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public boolean stopServer(long serverId) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/stopserver/server/"+serverId);
 		Token accessToken = new Token("", "");
@@ -255,6 +346,13 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 获取指定集群的集群参数
+	 * 
+	 * @param clusterId	集群ID
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public List<ClusterParam> getClusterParams(long clusterId)
 			throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/cluster/"+clusterId+"/params");
@@ -272,6 +370,14 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 获取指定集群下指定名称的集群参数
+	 * 
+	 * @param clusterId	集群ID
+	 * @param name	集群参数名称
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public ClusterParam getClusterParam(long clusterId, String name)
 			throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/cluster/"+clusterId+"/param?name="+name);
@@ -287,6 +393,15 @@ public class Fit2CloudClient {
 		}
 	}
 
+	/**
+	 * 设置集群参数, 若之前无此参数,则添加; 若有则替换
+	 * 
+	 * @param clusterId	集群ID
+	 * @param name	集群参数名称
+	 * @param value	集群参数值
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public boolean setClusterParam(long clusterId, String name, String value) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/cluster/"+clusterId+"/param");
 		request.addBodyParameter("name", name);
@@ -304,6 +419,14 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 删除指定集群的集群参数
+	 * 
+	 * @param clusterId	集群ID
+	 * @param name	集群参数名称
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public boolean deleteClusterParam(long clusterId, String name) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/cluster/"+clusterId+"/param/delete?name="+name);
 		Token accessToken = new Token("", "");
@@ -321,8 +444,8 @@ public class Fit2CloudClient {
 	/**
 	 * pageSize和pageNum可以不传,不传则返回所有脚本列表
 	 * 
-	 * @param pageSize
-	 * @param pageNum
+	 * @param pageSize	分页大小
+	 * @param pageNum	分页编号
 	 * @return
 	 * @throws Fit2CloudException
 	 */
@@ -357,6 +480,13 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 获取指定脚本信息
+	 * 
+	 * @param scriptId	脚本ID
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public Script getScript (long scriptId) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/script/"+scriptId);
 		Token accessToken = new Token("", "");
@@ -371,6 +501,15 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 添加脚本
+	 * 
+	 * @param name	脚本名称
+	 * @param description	脚本描述
+	 * @param scriptText	脚本内容
+	 * @return	脚本ID
+	 * @throws Fit2CloudException
+	 */
 	public Long addScript(String name, String description, String scriptText) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/script/add");
 		request.addBodyParameter("name", name);
@@ -389,6 +528,15 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 编辑指定脚本
+	 * 
+	 * @param scriptId	脚本ID
+	 * @param description	脚本描述
+	 * @param scriptText	脚本内容
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public boolean editScript(long scriptId, String description, String scriptText) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/script/"+scriptId+"/update");
 		request.addBodyParameter("description", description);
@@ -406,6 +554,13 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 删除指定脚本
+	 * 
+	 * @param scriptId	脚本ID
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public boolean deleteScript(long scriptId) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/script/"+scriptId+"/delete");
 		Token accessToken = new Token("", "");
@@ -423,15 +578,15 @@ public class Fit2CloudClient {
 	/**
 	 * 所有搜索条件均非必要, 若所有搜索条件均为null或0,则返回该用户下所有执行日志
 	 * 
-	 * @param clusterId
-	 * @param clusterRoleId
-	 * @param serverId
-	 * @param scriptId
-	 * @param status
-	 * @param pageSize
-	 * @param pageNum
-	 * @param sort
-	 * @param order
+	 * @param clusterId	集群ID
+	 * @param clusterRoleId	虚机组ID
+	 * @param serverId	虚机ID
+	 * @param scriptId	脚本ID
+	 * @param status	执行日志状态: (success | failed | expired)
+	 * @param pageSize	分页大小
+	 * @param pageNum	分页编号
+	 * @param sort	排序字段
+	 * @param order	排序方式
 	 * @return
 	 * @throws Fit2CloudException
 	 */
@@ -501,6 +656,18 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 获取指定资源的标签列表
+	 * 
+	 * @param clusterId	集群ID
+	 * @param clusterRoleId	虚机组ID
+	 * @param serverId	虚机ID
+	 * @param tagName	标签名称
+	 * @param pageSize	分页大小
+	 * @param pageNum	分页编号
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public List<Tag> getTags(Long clusterId, Long clusterRoleId, Long serverId, String tagName, Integer pageSize, Integer pageNum) throws Fit2CloudException {
 		StringBuffer requestParamSb = new StringBuffer();
 		if(clusterId != null && clusterId.intValue() > 0) {
@@ -552,6 +719,15 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 给指定虚机设置标签. 若无则新增标签; 若有则替换
+	 * 
+	 * @param serverId	虚机ID
+	 * @param tagName	标签名称
+	 * @param tagValue	标签值
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public Tag saveTag(Long serverId, String tagName, String tagValue) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/tags/save");
 		if(serverId != null && serverId.intValue() > 0) {
@@ -576,6 +752,14 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 删除指定虚机的标签
+	 * 
+	 * @param serverId	虚机ID
+	 * @param tagName	标签名称
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public boolean deleteTag(Long serverId, String tagName) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/tags/delete");
 		if(serverId != null && serverId.intValue() > 0) {
@@ -597,12 +781,14 @@ public class Fit2CloudClient {
 	}
 	
 	/**
-	 * @param clusterId
-	 * @param clusterRoleId
-	 * @param tagName	required
-	 * @param tagValue
-	 * @param pageSize
-	 * @param pageNum
+	 * 按标签获取虚机列表
+	 * 
+	 * @param clusterId	集群ID
+	 * @param clusterRoleId	虚机组ID
+	 * @param tagName	标签名称(必要参数)
+	 * @param tagValue	标签值
+	 * @param pageSize	分页大小
+	 * @param pageNum	分页编号
 	 * @return
 	 * @throws Fit2CloudException
 	 */
@@ -660,6 +846,17 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 添加应用版本
+	 * 
+	 * @param name	应用版本名称
+	 * @param description	应用版本描述
+	 * @param applicationName	所属应用名称
+	 * @param repositoryName	所属仓库名称
+	 * @param location	应用版本文件的下载路径
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public ApplicationRevision addApplicationRevision(String name, String description, String applicationName, String repositoryName, String location) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/deploy/app/revision/add.json");
 		request.addBodyParameter("revName", name);
@@ -682,6 +879,19 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 添加代码部署任务
+	 * 
+	 * @param applicationName	应用名称
+	 * @param applicationRevisionName	应用版本名称
+	 * @param clusterName	集群名称
+	 * @param clusterRoleName	虚机组名称
+	 * @param serverId	虚机ID
+	 * @param deployPolicy	部署策略 (allAtOnce | halfAtATime | oneAtATime)
+	 * @param description	部署任务描述
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public ApplicationDeployment addDeployment(String applicationName, String applicationRevisionName, String clusterName, String clusterRoleName, Long serverId, String deployPolicy, String description) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/deploy/app/revision/deployment/add.json");
 		request.addBodyParameter("appName", applicationName);
@@ -708,6 +918,13 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 获取应用信息
+	 * 
+	 * @param applicationName	应用名称
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public Application getApplication(String applicationName) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/deploy/app/search?name=" + applicationName);
 		Token accessToken = new Token("", "");
@@ -722,6 +939,13 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 获取应用仓库信息
+	 * 
+	 * @param applicationRepoName	应用仓库名称
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public ApplicationRepo getApplicationRepo(String applicationRepoName) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/deploy/repo/search?name=" + applicationRepoName);
 		Token accessToken = new Token("", "");
