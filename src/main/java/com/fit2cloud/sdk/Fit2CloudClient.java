@@ -20,8 +20,11 @@ import com.fit2cloud.sdk.model.ApplicationRevision;
 import com.fit2cloud.sdk.model.Cluster;
 import com.fit2cloud.sdk.model.ClusterParam;
 import com.fit2cloud.sdk.model.ClusterRole;
+import com.fit2cloud.sdk.model.ClusterRoleAlertLogging;
 import com.fit2cloud.sdk.model.Event;
 import com.fit2cloud.sdk.model.Logging;
+import com.fit2cloud.sdk.model.Metric;
+import com.fit2cloud.sdk.model.MetricTop;
 import com.fit2cloud.sdk.model.Script;
 import com.fit2cloud.sdk.model.Server;
 import com.fit2cloud.sdk.model.Tag;
@@ -118,12 +121,12 @@ public class Fit2CloudClient {
 	/**
 	 * 所有参数均非必须, 若所有参数均为null, 则返回当前用户拥有的所有虚机
 	 * 
-	 * @param clusterId	集群ID
-	 * @param clusterRoleId	虚机组ID
-	 * @param sort	排序字段
-	 * @param order	排序方式
-	 * @param pageSize	分页大小
-	 * @param pageNum	分页编号
+	 * @param clusterId	集群ID,(可选)
+	 * @param clusterRoleId	虚机组ID,(可选)
+	 * @param sort	排序字段,(可选)
+	 * @param order	排序方式,(可选)
+	 * @param pageSize	分页大小,(可选,默认9999)
+	 * @param pageNum	分页编号,(可选,默认1)
 	 * @param showTerminated	是否显示已关闭虚机
 	 * @return
 	 * @throws Fit2CloudException
@@ -444,8 +447,8 @@ public class Fit2CloudClient {
 	/**
 	 * pageSize和pageNum可以不传,不传则返回所有脚本列表
 	 * 
-	 * @param pageSize	分页大小
-	 * @param pageNum	分页编号
+	 * @param pageSize	分页大小,(可选,默认9999)
+	 * @param pageNum	分页编号,(可选,默认1)
 	 * @return
 	 * @throws Fit2CloudException
 	 */
@@ -578,15 +581,15 @@ public class Fit2CloudClient {
 	/**
 	 * 所有搜索条件均非必要, 若所有搜索条件均为null或0,则返回该用户下所有执行日志
 	 * 
-	 * @param clusterId	集群ID
-	 * @param clusterRoleId	虚机组ID
-	 * @param serverId	虚机ID
-	 * @param scriptId	脚本ID
-	 * @param status	执行日志状态: (success | failed | expired)
-	 * @param pageSize	分页大小
-	 * @param pageNum	分页编号
-	 * @param sort	排序字段
-	 * @param order	排序方式
+	 * @param clusterId	集群ID,(可选)
+	 * @param clusterRoleId	虚机组ID,(可选)
+	 * @param serverId	虚机ID,(可选)
+	 * @param scriptId	脚本ID,(可选)
+	 * @param status	执行日志状态,(可选, 取值范围 : success | failed | expired)
+	 * @param pageSize	分页大小,(可选,默认9999)
+	 * @param pageNum	分页编号,(可选,默认1)
+	 * @param sort	排序字段,(可选)
+	 * @param order	排序方式,(可选)
 	 * @return
 	 * @throws Fit2CloudException
 	 */
@@ -659,12 +662,12 @@ public class Fit2CloudClient {
 	/**
 	 * 获取指定资源的标签列表
 	 * 
-	 * @param clusterId	集群ID
-	 * @param clusterRoleId	虚机组ID
-	 * @param serverId	虚机ID
-	 * @param tagName	标签名称
-	 * @param pageSize	分页大小
-	 * @param pageNum	分页编号
+	 * @param clusterId	集群ID,(可选)
+	 * @param clusterRoleId	虚机组ID,(可选)
+	 * @param serverId	虚机ID,(可选)
+	 * @param tagName	标签名称,(可选)
+	 * @param pageSize	分页大小,(可选,默认9999)
+	 * @param pageNum	分页编号,(可选,默认1)
 	 * @return
 	 * @throws Fit2CloudException
 	 */
@@ -960,4 +963,122 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 获取监控数据排行锁支持的监控项列表
+	 * 
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public List<Metric> getTopMetrics() throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/top/metrics");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			Type listType = new TypeToken<ArrayList<Metric>>() {}.getType();
+			return new GsonBuilder().create().fromJson(responseString, listType);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
+	/**
+	 * 获取指定监控的监控排行数据
+	 * 
+	 * @param metricName	监控项名称,由getTopMetrics方法获取
+	 * @param limit	排行数量限制,(可选,默认5)
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public List<MetricTop> getTopMetricData(String metricName, Integer limit) throws Fit2CloudException {
+		StringBuffer requestParamSb = new StringBuffer();
+		if(metricName != null && metricName.trim().length() > 0) {
+			requestParamSb.append("metric=");
+			requestParamSb.append(metricName);
+			requestParamSb.append("&");
+		}
+		if(limit != null && limit.intValue() > 0) {
+			requestParamSb.append("limit=");
+			requestParamSb.append(limit);
+		}
+		String requestParam = requestParamSb.toString();
+		if(requestParam != null && requestParam.endsWith("&")) {
+			requestParam = requestParam.substring(0, requestParam.length() - 1);
+		}
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/top/metric/data?"+requestParam);
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			Type listType = new TypeToken<ArrayList<MetricTop>>() {}.getType();
+			return new GsonBuilder().create().fromJson(responseString, listType);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
+	/**
+	 * @param clusterId	集群序号(可选)
+	 * @param clusterRoleId	虚机组序号(可选)
+	 * @param serverId	虚机序号(可选)
+	 * @param alertType	告警级别,(可选, 取值范围 : WARN | ERROR)
+	 * @param pageSize	分页大小,(可选,默认9999)
+	 * @param pageNum	分页编号,(可选,默认1)
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public List<ClusterRoleAlertLogging> getAlertLoggings(Long clusterId, Long clusterRoleId, Long serverId, String alertType, Integer pageSize, Integer pageNum) throws Fit2CloudException {
+		StringBuffer requestParamSb = new StringBuffer();
+		if(clusterId != null && clusterId.intValue() > 0) {
+			requestParamSb.append("clusterId=");
+			requestParamSb.append(clusterId);
+			requestParamSb.append("&");
+		}
+		if(clusterRoleId != null && clusterRoleId.intValue() > 0) {
+			requestParamSb.append("clusterRoleId=");
+			requestParamSb.append(clusterRoleId);
+			requestParamSb.append("&");
+		}
+		if(serverId != null && serverId.intValue() > 0) {
+			requestParamSb.append("serverId=");
+			requestParamSb.append(serverId);
+			requestParamSb.append("&");
+		}
+		if(alertType != null && alertType.trim().length() > 0) {
+			requestParamSb.append("alertType=");
+			requestParamSb.append(alertType.trim());
+			requestParamSb.append("&");
+		}
+		if(pageSize != null && pageSize.intValue() > 0) {
+			requestParamSb.append("pageSize=");
+			requestParamSb.append(pageSize);
+			requestParamSb.append("&");
+		}
+		if(pageNum != null && pageNum.intValue() > 0) {
+			requestParamSb.append("pageNum=");
+			requestParamSb.append(pageNum);
+			requestParamSb.append("&");
+		}
+		String requestParam = requestParamSb.toString();
+		if(requestParam != null && requestParam.endsWith("&")) {
+			requestParam = requestParam.substring(0, requestParam.length() - 1);
+		}
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/alerts?"+requestParam);
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			Type listType = new TypeToken<List<ClusterRoleAlertLogging>>() {}.getType();
+			return new GsonBuilder().create().fromJson(responseString, listType);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
 }

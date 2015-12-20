@@ -14,8 +14,11 @@ import com.fit2cloud.sdk.model.ApplicationRevision;
 import com.fit2cloud.sdk.model.Cluster;
 import com.fit2cloud.sdk.model.ClusterParam;
 import com.fit2cloud.sdk.model.ClusterRole;
+import com.fit2cloud.sdk.model.ClusterRoleAlertLogging;
 import com.fit2cloud.sdk.model.Event;
 import com.fit2cloud.sdk.model.Logging;
+import com.fit2cloud.sdk.model.Metric;
+import com.fit2cloud.sdk.model.MetricTop;
 import com.fit2cloud.sdk.model.Script;
 import com.fit2cloud.sdk.model.Server;
 import com.fit2cloud.sdk.model.Tag;
@@ -409,4 +412,36 @@ public class Fit2CloudClientTest {
 			System.out.println(e.getMessage());
 		}
 	}
+	
+	@Test
+	public void testGetTopMetrics() throws Exception {
+		try {
+			List<Metric> metricList = client.getTopMetrics();
+			System.out.println(new Gson().toJson(metricList));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testGetTopMetricData() throws Exception {
+		try {
+			List<MetricTop> metricDataList = client.getTopMetricData("cpu-usage", 3);
+			System.out.println(new Gson().toJson(metricDataList));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testGetAlertLoggings() throws Exception {
+		try {
+			List<ClusterRoleAlertLogging> alertList = client.getAlertLoggings(null, null, null, "ERROR", 3, 1);
+			System.out.println(new Gson().toJson(alertList));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	
 }

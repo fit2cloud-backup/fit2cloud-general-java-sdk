@@ -9,6 +9,7 @@ public class FireEventRequest {
 	private String targetClusterroleIds="";
 	private String targetServerIds="";
 	private String eventData="";
+	private String scriptType="";
 
 	public String getEventName() {
 		return eventName;
@@ -81,5 +82,12 @@ public class FireEventRequest {
 	public void setEventData(String eventData) {
 		this.eventData = eventData;
 	}
-	
+
+	public String getScriptType() {
+		return scriptType;
+	}
+
+	public void setScriptType(String scriptType) {
+		this.scriptType = scriptType;
+	}
 }

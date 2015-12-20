@@ -31,6 +31,8 @@ public class Event {
 	private String scriptTrigger;
 	private String status;
 	private Long usedTime;
+	private String scriptPlatform;
+	private String scriptType;
 	
 	public Long getId() {
 		return id;
@@ -207,5 +209,17 @@ public class Event {
 	}
 	public void setUsedTime(Long usedTime) {
 		this.usedTime = usedTime;
+	}
+	public String getScriptPlatform() {
+		return scriptPlatform;
+	}
+	public void setScriptPlatform(String scriptPlatform) {
+		this.scriptPlatform = scriptPlatform;
+	}
+	public String getScriptType() {
+		return scriptType;
+	}
+	public void setScriptType(String scriptType) {
+		this.scriptType = scriptType;
 	}
 }

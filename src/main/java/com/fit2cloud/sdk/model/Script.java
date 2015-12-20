@@ -8,6 +8,8 @@ public class Script {
 	private String description;
 	private String scriptText;
 	private Long created;
+	private String platform;
+	private String scriptType;
 	
 	public Long getCreated() {
 		return created;
@@ -55,5 +57,21 @@ public class Script {
 
 	public void setGroupId(Long groupId) {
 		this.groupId = groupId;
+	}
+
+	public String getPlatform() {
+		return platform;
+	}
+
+	public void setPlatform(String platform) {
+		this.platform = platform;
+	}
+
+	public String getScriptType() {
+		return scriptType;
+	}
+
+	public void setScriptType(String scriptType) {
+		this.scriptType = scriptType;
 	}
 }

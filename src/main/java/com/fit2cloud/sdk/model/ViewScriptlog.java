@@ -26,6 +26,9 @@ public class ViewScriptlog {
 	private Long usedTime;
 	private Long schedulerTaskId;
 	
+	private String scriptPlatform;
+	private String scriptType;
+	
 	public Long getId() {
 		return id;
 	}
@@ -155,5 +158,17 @@ public class ViewScriptlog {
 	}
 	public void setScriptTrigger(String scriptTrigger) {
 		this.scriptTrigger = scriptTrigger;
+	}
+	public String getScriptPlatform() {
+		return scriptPlatform;
+	}
+	public void setScriptPlatform(String scriptPlatform) {
+		this.scriptPlatform = scriptPlatform;
+	}
+	public String getScriptType() {
+		return scriptType;
+	}
+	public void setScriptType(String scriptType) {
+		this.scriptType = scriptType;
 	}
 }
