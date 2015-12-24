@@ -1026,12 +1026,13 @@ public class Fit2CloudClient {
 	 * @param clusterRoleId	虚机组序号(可选)
 	 * @param serverId	虚机序号(可选)
 	 * @param alertType	告警级别,(可选, 取值范围 : WARN | ERROR)
+	 * @param alertStatus	告警状态,(可选, 取值范围 : showNull [告警中] | showIgnore [已忽略] | showNotNull [已解除])
 	 * @param pageSize	分页大小,(可选,默认9999)
 	 * @param pageNum	分页编号,(可选,默认1)
 	 * @return
 	 * @throws Fit2CloudException
 	 */
-	public List<ClusterRoleAlertLogging> getAlertLoggings(Long clusterId, Long clusterRoleId, Long serverId, String alertType, Integer pageSize, Integer pageNum) throws Fit2CloudException {
+	public List<ClusterRoleAlertLogging> getAlertLoggings(Long clusterId, Long clusterRoleId, Long serverId, String alertType, String alertStatus, Integer pageSize, Integer pageNum) throws Fit2CloudException {
 		StringBuffer requestParamSb = new StringBuffer();
 		if(clusterId != null && clusterId.intValue() > 0) {
 			requestParamSb.append("clusterId=");
@@ -1051,6 +1052,11 @@ public class Fit2CloudClient {
 		if(alertType != null && alertType.trim().length() > 0) {
 			requestParamSb.append("alertType=");
 			requestParamSb.append(alertType.trim());
+			requestParamSb.append("&");
+		}
+		if(alertStatus != null && alertStatus.trim().length() > 0) {
+			requestParamSb.append("alertStatus=");
+			requestParamSb.append(alertStatus.trim());
 			requestParamSb.append("&");
 		}
 		if(pageSize != null && pageSize.intValue() > 0) {

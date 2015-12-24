@@ -436,7 +436,7 @@ public class Fit2CloudClientTest {
 	@Test
 	public void testGetAlertLoggings() throws Exception {
 		try {
-			List<ClusterRoleAlertLogging> alertList = client.getAlertLoggings(null, null, null, "ERROR", 3, 1);
+			List<ClusterRoleAlertLogging> alertList = client.getAlertLoggings(null, null, null, "ERROR", "showNull", 3, 1);
 			System.out.println(new Gson().toJson(alertList));
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
