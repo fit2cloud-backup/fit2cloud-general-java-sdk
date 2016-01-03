@@ -367,7 +367,7 @@ public class Fit2CloudClientTest {
 			String location = "WordPressTest/wordpress-4.2-bin-201502151613-1.zip";
 			String applicationName = "testapp";
 			String repositoryName = "key-139-oss-wp";
-			ApplicationRevision revision = client.addApplicationRevision(name, description, applicationName, repositoryName, location);
+			ApplicationRevision revision = client.addApplicationRevision(name, description, applicationName, repositoryName, location, null);
 			System.out.println(new Gson().toJson(revision));
 		} catch (Exception e) {
 			System.out.println(e.getMessage());

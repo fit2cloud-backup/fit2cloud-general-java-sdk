@@ -857,10 +857,11 @@ public class Fit2CloudClient {
 	 * @param applicationName	所属应用名称
 	 * @param repositoryName	所属仓库名称
 	 * @param location	应用版本文件的下载路径
+	 * @param md5	应用版本文件的md5值
 	 * @return
 	 * @throws Fit2CloudException
 	 */
-	public ApplicationRevision addApplicationRevision(String name, String description, String applicationName, String repositoryName, String location) throws Fit2CloudException {
+	public ApplicationRevision addApplicationRevision(String name, String description, String applicationName, String repositoryName, String location, String md5) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/deploy/app/revision/add.json");
 		request.addBodyParameter("revName", name);
 		request.addBodyParameter("revDescription", description);
@@ -869,6 +870,9 @@ public class Fit2CloudClient {
 			request.addBodyParameter("repoName", repositoryName);
 		}
 		request.addBodyParameter("location", location);
+		if(md5 != null && md5.trim().length() > 0) {
+			request.addBodyParameter("md5", md5);
+		}
 		request.setCharset("UTF-8");
 		Token accessToken = new Token("", "");
 		service.signRequest(accessToken, request);
