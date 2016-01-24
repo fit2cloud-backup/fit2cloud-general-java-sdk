@@ -11,11 +11,14 @@ import com.fit2cloud.sdk.model.ApplicationDeployPolicyType;
 import com.fit2cloud.sdk.model.ApplicationDeployment;
 import com.fit2cloud.sdk.model.ApplicationRepo;
 import com.fit2cloud.sdk.model.ApplicationRevision;
+import com.fit2cloud.sdk.model.CloudCredential;
 import com.fit2cloud.sdk.model.Cluster;
 import com.fit2cloud.sdk.model.ClusterParam;
 import com.fit2cloud.sdk.model.ClusterRole;
 import com.fit2cloud.sdk.model.ClusterRoleAlertLogging;
 import com.fit2cloud.sdk.model.Event;
+import com.fit2cloud.sdk.model.KeyPassword;
+import com.fit2cloud.sdk.model.LaunchConfiguration;
 import com.fit2cloud.sdk.model.Logging;
 import com.fit2cloud.sdk.model.Metric;
 import com.fit2cloud.sdk.model.MetricTop;
@@ -443,5 +446,36 @@ public class Fit2CloudClientTest {
 		}
 	}
 	
+	@Test
+	public void testGetCloudCredentials() throws Exception {
+		try {
+			List<CloudCredential> list = client.getCloudCredentials();
+			System.out.println(new Gson().toJson(list));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testGetLaunchconfigurations() throws Exception {
+		try {
+			Long cloudCredentialId = 30l;
+			List<LaunchConfiguration> list = client.getLaunchconfigurations(cloudCredentialId);
+			System.out.println(new Gson().toJson(list));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testGetServerLoginInfos() throws Exception {
+		try {
+			Long serverId = 39l;
+			KeyPassword result = client.getServerLoginInfo(serverId);
+			System.out.println(new Gson().toJson(result));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
 	
 }

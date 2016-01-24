@@ -17,11 +17,14 @@ import com.fit2cloud.sdk.model.Application;
 import com.fit2cloud.sdk.model.ApplicationDeployment;
 import com.fit2cloud.sdk.model.ApplicationRepo;
 import com.fit2cloud.sdk.model.ApplicationRevision;
+import com.fit2cloud.sdk.model.CloudCredential;
 import com.fit2cloud.sdk.model.Cluster;
 import com.fit2cloud.sdk.model.ClusterParam;
 import com.fit2cloud.sdk.model.ClusterRole;
 import com.fit2cloud.sdk.model.ClusterRoleAlertLogging;
 import com.fit2cloud.sdk.model.Event;
+import com.fit2cloud.sdk.model.KeyPassword;
+import com.fit2cloud.sdk.model.LaunchConfiguration;
 import com.fit2cloud.sdk.model.Logging;
 import com.fit2cloud.sdk.model.Metric;
 import com.fit2cloud.sdk.model.MetricTop;
@@ -1086,6 +1089,80 @@ public class Fit2CloudClient {
 		String responseString = response.getBody();
 		if (code==200){
 			Type listType = new TypeToken<List<ClusterRoleAlertLogging>>() {}.getType();
+			return new GsonBuilder().create().fromJson(responseString, listType);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
+	/**
+	 * 获取虚机登录信息
+	 * 
+	 * @param serverId 必填, 虚机ID
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public KeyPassword getServerLoginInfo(long serverId) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/server/"+serverId+"/logininfo");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code == 200) {
+			return new GsonBuilder().create().fromJson(responseString, KeyPassword.class);
+		} else {
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
+	/**
+	 * 获取云帐号列表
+	 * 
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public List<CloudCredential> getCloudCredentials() throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/cloudcredentials");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			Type listType = new TypeToken<ArrayList<CloudCredential>>() {}.getType();
+			return new GsonBuilder().create().fromJson(responseString, listType);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
+	/**
+	 * 获取虚机创建模板列表
+	 * 
+	 * @param cloudCredentialId	可选,云帐号ID
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public List<LaunchConfiguration> getLaunchconfigurations(Long cloudCredentialId) throws Fit2CloudException {
+		StringBuffer requestParamSb = new StringBuffer();
+		if(cloudCredentialId != null && cloudCredentialId.intValue() > 0) {
+			requestParamSb.append("cloudCredentialId=");
+			requestParamSb.append(cloudCredentialId);
+			requestParamSb.append("&");
+		}
+		String requestParam = requestParamSb.toString();
+		if(requestParam != null && requestParam.endsWith("&")) {
+			requestParam = requestParam.substring(0, requestParam.length() - 1);
+		}
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/launchconfigurations?"+requestParam);
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			Type listType = new TypeToken<ArrayList<LaunchConfiguration>>() {}.getType();
 			return new GsonBuilder().create().fromJson(responseString, listType);
 		}else{
 			throw new Fit2CloudException(responseString);
