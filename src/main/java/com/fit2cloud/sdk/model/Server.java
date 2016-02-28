@@ -1,5 +1,7 @@
 package com.fit2cloud.sdk.model;
 
+import java.util.List;
+
 
 public class Server {
 	
@@ -33,6 +35,7 @@ public class Server {
 	private String machineId;
 	private String os;
 	private String agentVersion;
+	private List<Tag> tags;
 	public Long getId() {
 		return id;
 	}
@@ -212,6 +215,12 @@ public class Server {
 	}
 	public void setVmTypeDescription(String vmTypeDescription) {
 		this.vmTypeDescription = vmTypeDescription;
+	}
+	public List<Tag> getTags() {
+		return tags;
+	}
+	public void setTags(List<Tag> tags) {
+		this.tags = tags;
 	}
 	@Override
 	public String toString() {
