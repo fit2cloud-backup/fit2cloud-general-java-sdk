@@ -15,6 +15,7 @@ import org.scribe.oauth.OAuthService;
 
 import com.fit2cloud.sdk.model.Application;
 import com.fit2cloud.sdk.model.ApplicationDeployment;
+import com.fit2cloud.sdk.model.ApplicationDeploymentLog;
 import com.fit2cloud.sdk.model.ApplicationRepo;
 import com.fit2cloud.sdk.model.ApplicationRevision;
 import com.fit2cloud.sdk.model.CloudCredential;
@@ -925,6 +926,79 @@ public class Fit2CloudClient {
 			return new GsonBuilder().create().fromJson(responseString, ApplicationDeployment.class);
 		}else{
 			throw new Fit2CloudException(response.getBody());
+		}
+	}
+	
+	/**
+	 * 获取代码部署记录列表
+	 * 
+	 * @param clusterId	集群ID,可选
+	 * @param applicationId	应用ID,可选
+	 * @param pageSize	分页大小,可选
+	 * @param pageNum	分页编号,可选
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public List<ApplicationDeployment> getDeployments(Long clusterId, Long applicationId, Integer pageSize, Integer pageNum) throws Fit2CloudException {
+		StringBuffer requestParamSb = new StringBuffer();
+		if(clusterId != null && clusterId.intValue() > 0) {
+			requestParamSb.append("clusterId=");
+			requestParamSb.append(clusterId);
+			requestParamSb.append("&");
+		}
+		if(applicationId != null && applicationId.intValue() > 0) {
+			requestParamSb.append("applicationId=");
+			requestParamSb.append(applicationId);
+			requestParamSb.append("&");
+		}
+		if(pageSize != null && pageSize.intValue() > 0) {
+			requestParamSb.append("pageSize=");
+			requestParamSb.append(pageSize);
+			requestParamSb.append("&");
+		}
+		if(pageNum != null && pageNum.intValue() > 0) {
+			requestParamSb.append("pageNum=");
+			requestParamSb.append(pageNum);
+			requestParamSb.append("&");
+		}
+		String requestParam = requestParamSb.toString();
+		if(requestParam != null && requestParam.endsWith("&")) {
+			requestParam = requestParam.substring(0, requestParam.length() - 1);
+		}
+		
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/deployments?"+requestParam);
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			Type listType = new TypeToken<ArrayList<ApplicationDeployment>>() {}.getType();
+			return new GsonBuilder().create().fromJson(responseString, listType);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
+	/**
+	 * 获取指定代码部署任务中,每台主机部署的情况
+	 * 
+	 * @param deploymentId	代码部署任务ID
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public List<ApplicationDeploymentLog> getDeploymentLogs(Long deploymentId) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/deploymentlog/"+deploymentId+"/list");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			Type listType = new TypeToken<ArrayList<ApplicationDeploymentLog>>() {}.getType();
+			return new GsonBuilder().create().fromJson(responseString, listType);
+		}else{
+			throw new Fit2CloudException(responseString);
 		}
 	}
 	

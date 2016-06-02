@@ -9,6 +9,7 @@ import org.junit.Test;
 import com.fit2cloud.sdk.model.Application;
 import com.fit2cloud.sdk.model.ApplicationDeployPolicyType;
 import com.fit2cloud.sdk.model.ApplicationDeployment;
+import com.fit2cloud.sdk.model.ApplicationDeploymentLog;
 import com.fit2cloud.sdk.model.ApplicationRepo;
 import com.fit2cloud.sdk.model.ApplicationRevision;
 import com.fit2cloud.sdk.model.CloudCredential;
@@ -478,4 +479,17 @@ public class Fit2CloudClientTest {
 		}
 	}
 	
+	@Test
+	public void testGetDeployments() throws Exception {
+		List<ApplicationDeployment> list = client.getDeployments(7l, 4l, null, null);
+		assert list!=null && list.size()>0;
+		System.out.println(new Gson().toJson(list));
+	}
+	
+	@Test
+	public void testGetDeploymentLogs() throws Exception {
+		List<ApplicationDeploymentLog> list = client.getDeploymentLogs(1l);
+		assert list!=null && list.size()>0;
+		System.out.println(new Gson().toJson(list));
+	}
 }
