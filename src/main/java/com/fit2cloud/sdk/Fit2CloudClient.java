@@ -930,6 +930,71 @@ public class Fit2CloudClient {
 	}
 	
 	/**
+	 * 添加代码部署任务
+	 * 
+	 * @param applicationId	应用ID
+	 * @param applicationRevisionId	应用版本ID
+	 * @param clusterName	集群名称
+	 * @param clusterRoleName	虚机组名称
+	 * @param serverId	虚机ID
+	 * @param deployPolicy	部署策略 (allAtOnce | halfAtATime | oneAtATime)
+	 * @param description	部署任务描述
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public ApplicationDeployment addDeployment(Long applicationId, Long applicationRevisionid, String clusterName, String clusterRoleName, Long serverId, String deployPolicy, String description) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/deploy/app/revision/deployment/add.json");
+		request.addBodyParameter("applicationId", String.valueOf(applicationId));
+		request.addBodyParameter("applicationRevisionId", String.valueOf(applicationRevisionid));
+		request.addBodyParameter("clusterName", clusterName);
+		if(clusterRoleName != null && clusterRoleName.trim().length() > 0) {
+			request.addBodyParameter("clusterRoleName", clusterRoleName);
+		}
+		if(serverId != null && serverId.longValue() > 0) {
+			request.addBodyParameter("serverId", String.valueOf(serverId));
+		}
+		request.addBodyParameter("deployPolicy", deployPolicy);
+		request.addBodyParameter("description", description);
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return new GsonBuilder().create().fromJson(responseString, ApplicationDeployment.class);
+		}else{
+			throw new Fit2CloudException(response.getBody());
+		}
+	}
+	
+	/**
+	 * 获取部署任务信息
+	 * @param deploymentId
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public ApplicationDeployment getDeployment(Long deploymentId) throws Fit2CloudException {
+		if(deploymentId ==null || deploymentId == 0){
+			throw new Fit2CloudException("invalid parameter!");
+		}
+		
+		String url = String.format("%s/deploy/app/revision/deployment/get.json?deploymentId=%s", restApiEndpoint, deploymentId);
+		OAuthRequest request = new OAuthRequest(Verb.GET, url);
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return new GsonBuilder().create().fromJson(responseString, ApplicationDeployment.class);
+		}else{
+			throw new Fit2CloudException(response.getBody());
+		}
+	}
+	
+	/**
 	 * 获取代码部署记录列表
 	 * 
 	 * @param clusterId	集群ID,可选
