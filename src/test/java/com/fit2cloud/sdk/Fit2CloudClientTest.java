@@ -38,9 +38,9 @@ public class Fit2CloudClientTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		this.apiKey = "YOUR_API_KEY";
-		this.apiSecret = "YOUR_API_SECRET_KEY";
-		this.apiEndpoint = "YOUR_API_ENDPOINT";
+		this.apiKey = "dGFvQGZpdDJjbG91ZC5jb20=";
+		this.apiSecret = "90644295-611f-4bd9-b5d2-e821e1eaeac2";
+		this.apiEndpoint = "http://localhost:6608/rest/";
 		this.client = new Fit2CloudClient(apiKey, apiSecret, apiEndpoint);
 	}
 
@@ -484,6 +484,13 @@ public class Fit2CloudClientTest {
 		List<ApplicationDeployment> list = client.getDeployments(7l, 4l, null, null);
 		assert list!=null && list.size()>0;
 		System.out.println(new Gson().toJson(list));
+	}
+	
+	@Test
+	public void testGetDeployment() throws Exception {
+		ApplicationDeployment applicationDeployment = client.getDeployment(12l);
+		assert applicationDeployment!=null;
+		System.out.println(new Gson().toJson(applicationDeployment));
 	}
 	
 	@Test
