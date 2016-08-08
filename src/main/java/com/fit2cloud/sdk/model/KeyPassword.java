@@ -10,6 +10,7 @@ public class KeyPassword {
 	private String password;
 	private String type;
 	private String creator;
+	private Long port;
 	public long getId() {
 		return id;
 	}
@@ -63,5 +64,11 @@ public class KeyPassword {
 	}
 	public void setCreator(String creator) {
 		this.creator = creator;
+	}
+	public Long getPort() {
+		return port;
+	}
+	public void setPort(Long port) {
+		this.port = port;
 	}
 }
