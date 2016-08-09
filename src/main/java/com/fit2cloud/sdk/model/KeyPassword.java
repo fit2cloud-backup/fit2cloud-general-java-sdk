@@ -11,6 +11,8 @@ public class KeyPassword {
 	private String type;
 	private String creator;
 	private Long port;
+	private String remoteIp;
+	private String localIp;
 	public long getId() {
 		return id;
 	}
@@ -70,5 +72,17 @@ public class KeyPassword {
 	}
 	public void setPort(Long port) {
 		this.port = port;
+	}
+	public String getRemoteIp() {
+		return remoteIp;
+	}
+	public void setRemoteIp(String remoteIp) {
+		this.remoteIp = remoteIp;
+	}
+	public String getLocalIp() {
+		return localIp;
+	}
+	public void setLocalIp(String localIp) {
+		this.localIp = localIp;
 	}
 }
