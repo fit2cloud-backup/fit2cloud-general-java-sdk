@@ -904,6 +904,24 @@ public class Fit2CloudClient {
 	 * @throws Fit2CloudException
 	 */
 	public ApplicationDeployment addDeployment(String applicationName, String applicationRevisionName, String clusterName, String clusterRoleName, Long serverId, String deployPolicy, String description) throws Fit2CloudException {
+		return addDeployment(applicationName, applicationRevisionName, clusterName, clusterRoleName, serverId, deployPolicy, description, null);
+	}
+	
+	/**
+	 * 添加代码部署任务
+	 * 
+	 * @param applicationName	应用名称
+	 * @param applicationRevisionName	应用版本名称
+	 * @param clusterName	集群名称
+	 * @param clusterRoleName	虚机组名称
+	 * @param serverId	虚机ID
+	 * @param deployPolicy	部署策略 (allAtOnce | halfAtATime | oneAtATime)
+	 * @param description	部署任务描述
+	 * @param contactGroupId	通知组ID，null表示不需要接收部署通知邮件
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public ApplicationDeployment addDeployment(String applicationName, String applicationRevisionName, String clusterName, String clusterRoleName, Long serverId, String deployPolicy, String description, Long contactGroupId) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/deploy/app/revision/deployment/add.json");
 		request.addBodyParameter("appName", applicationName);
 		request.addBodyParameter("revName", applicationRevisionName);
@@ -916,6 +934,9 @@ public class Fit2CloudClient {
 		}
 		request.addBodyParameter("deployPolicy", deployPolicy);
 		request.addBodyParameter("description", description);
+		if(contactGroupId != null && contactGroupId.longValue() > 0) {
+			request.addBodyParameter("contactGroupId", String.valueOf(contactGroupId));
+		}
 		request.setCharset("UTF-8");
 		Token accessToken = new Token("", "");
 		service.signRequest(accessToken, request);
@@ -943,6 +964,24 @@ public class Fit2CloudClient {
 	 * @throws Fit2CloudException
 	 */
 	public ApplicationDeployment addDeployment(Long applicationId, Long applicationRevisionid, String clusterName, String clusterRoleName, Long serverId, String deployPolicy, String description) throws Fit2CloudException {
+		return addDeployment(applicationId, applicationRevisionid, clusterName, clusterRoleName, serverId, deployPolicy, description, null);
+	}
+	
+	/**
+	 * 添加代码部署任务
+	 * 
+	 * @param applicationId	应用ID
+	 * @param applicationRevisionId	应用版本ID
+	 * @param clusterName	集群名称
+	 * @param clusterRoleName	虚机组名称
+	 * @param serverId	虚机ID
+	 * @param deployPolicy	部署策略 (allAtOnce | halfAtATime | oneAtATime)
+	 * @param description	部署任务描述
+	 * @param contactGroupId	通知组ID，null表示不需要接收部署通知邮件
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public ApplicationDeployment addDeployment(Long applicationId, Long applicationRevisionid, String clusterName, String clusterRoleName, Long serverId, String deployPolicy, String description, Long contactGroupId) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/deploy/app/revision/deployment/add.json");
 		request.addBodyParameter("applicationId", String.valueOf(applicationId));
 		request.addBodyParameter("applicationRevisionId", String.valueOf(applicationRevisionid));
@@ -955,6 +994,9 @@ public class Fit2CloudClient {
 		}
 		request.addBodyParameter("deployPolicy", deployPolicy);
 		request.addBodyParameter("description", description);
+		if(contactGroupId != null && contactGroupId.longValue() > 0) {
+			request.addBodyParameter("contactGroupId", String.valueOf(contactGroupId));
+		}
 		request.setCharset("UTF-8");
 		Token accessToken = new Token("", "");
 		service.signRequest(accessToken, request);

@@ -14,6 +14,7 @@ public class ApplicationDeployment {
 	private String description;
 	private String msg;
 	private Long applicationId;
+	private Long contactGroupId;
 	public Long getId() {
 		return id;
 	}
@@ -85,5 +86,11 @@ public class ApplicationDeployment {
 	}
 	public void setApplicationId(Long applicationId) {
 		this.applicationId = applicationId;
+	}
+	public Long getContactGroupId() {
+		return contactGroupId;
+	}
+	public void setContactGroupId(Long contactGroupId) {
+		this.contactGroupId = contactGroupId;
 	}
 }
