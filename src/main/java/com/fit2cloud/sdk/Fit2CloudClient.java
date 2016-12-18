@@ -23,6 +23,7 @@ import com.fit2cloud.sdk.model.Cluster;
 import com.fit2cloud.sdk.model.ClusterParam;
 import com.fit2cloud.sdk.model.ClusterRole;
 import com.fit2cloud.sdk.model.ClusterRoleAlertLogging;
+import com.fit2cloud.sdk.model.ContactGroup;
 import com.fit2cloud.sdk.model.Event;
 import com.fit2cloud.sdk.model.KeyPassword;
 import com.fit2cloud.sdk.model.LaunchConfiguration;
@@ -31,6 +32,7 @@ import com.fit2cloud.sdk.model.Metric;
 import com.fit2cloud.sdk.model.MetricTop;
 import com.fit2cloud.sdk.model.Script;
 import com.fit2cloud.sdk.model.Server;
+import com.fit2cloud.sdk.model.ServiceCatalogOrder;
 import com.fit2cloud.sdk.model.Tag;
 import com.fit2cloud.sdk.model.ViewScriptlog;
 import com.google.gson.GsonBuilder;
@@ -123,6 +125,27 @@ public class Fit2CloudClient {
 	}
 	
 	/**
+	 * 获取指定虚机组信息
+	 * 
+	 * @param clusterRoleId	虚机组ID
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public ClusterRole getClusterRole(long clusterRoleId) throws Fit2CloudException{
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint +  "/clusterrole/"+clusterRoleId);
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return new GsonBuilder().create().fromJson(responseString, ClusterRole.class);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
+	/**
 	 * 所有参数均非必须, 若所有参数均为null, 则返回当前用户拥有的所有虚机
 	 * 
 	 * @param clusterId	集群ID,(可选)
@@ -136,11 +159,44 @@ public class Fit2CloudClient {
 	 * @throws Fit2CloudException
 	 */
 	public List<Server> getServers(Long clusterId, Long clusterRoleId, String sort, String order, Integer pageSize, Integer pageNum, boolean showTerminated) throws Fit2CloudException {
-		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint
-				+ "/servers?clusterId=" + clusterId + "&clusterRoleId="
-				+ clusterRoleId + "&sort=" + sort + "&order=" + order
-				+ "&pageSize=" + pageSize + "&pageNum=" + pageNum
-				+ "&showTerminated=" + showTerminated);
+		
+		StringBuffer requestParamSb = new StringBuffer();
+		if(clusterId != null && clusterId.intValue() > 0) {
+			requestParamSb.append("clusterId=");
+			requestParamSb.append(clusterId);
+			requestParamSb.append("&");
+		}
+		if(clusterRoleId != null && clusterRoleId.intValue() > 0) {
+			requestParamSb.append("clusterRoleId=");
+			requestParamSb.append(clusterRoleId);
+			requestParamSb.append("&");
+		}
+		if(sort != null && sort.trim().length() > 0) {
+			requestParamSb.append("sort=");
+			requestParamSb.append(sort.trim());
+			requestParamSb.append("&");
+		}
+		if(order != null && order.trim().length() > 0) {
+			requestParamSb.append("order=");
+			requestParamSb.append(order.trim());
+			requestParamSb.append("&");
+		}
+		if(pageSize != null && pageSize.intValue() > 0) {
+			requestParamSb.append("pageSize=");
+			requestParamSb.append(pageSize);
+			requestParamSb.append("&");
+		}
+		if(pageNum != null && pageNum.intValue() > 0) {
+			requestParamSb.append("pageNum=");
+			requestParamSb.append(pageNum);
+			requestParamSb.append("&");
+		}
+		String requestParam = requestParamSb.toString();
+		if(requestParam != null && requestParam.endsWith("&")) {
+			requestParam = requestParam.substring(0, requestParam.length() - 1);
+		}
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/servers?"+requestParam);
+		request.setCharset("UTF-8");
 		Token accessToken = new Token("", "");
 		service.signRequest(accessToken, request);
 		Response response = request.send();
@@ -650,6 +706,7 @@ public class Fit2CloudClient {
 		}
 		
 		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/event/loggings?"+requestParam);
+		request.setCharset("UTF-8");
 		Token accessToken = new Token("", "");
 		service.signRequest(accessToken, request);
 		Response response = request.send();
@@ -1131,6 +1188,67 @@ public class Fit2CloudClient {
 	}
 	
 	/**
+	 * 获取应用信息
+	 * 
+	 * @param applicationId	应用ID
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public Application getApplication(Long applicationId) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/deploy/app/search?id=" + applicationId);
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return new GsonBuilder().create().fromJson(responseString, Application.class);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
+	/**
+	 * 获取代码部署应用列表
+	 * 
+	 * @param pageSize	分页大小,(可选,默认9999)
+	 * @param pageNum	分页编号,(可选,默认1)
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public List<Application> getApplicationList(Integer pageSize, Integer pageNum) throws Fit2CloudException {
+		StringBuffer requestParamSb = new StringBuffer();
+		if(pageSize != null && pageSize.intValue() > 0) {
+			requestParamSb.append("pageSize=");
+			requestParamSb.append(pageSize);
+			requestParamSb.append("&");
+		}
+		if(pageNum != null && pageNum.intValue() > 0) {
+			requestParamSb.append("pageNum=");
+			requestParamSb.append(pageNum);
+			requestParamSb.append("&");
+		}
+		String requestParam = requestParamSb.toString();
+		if(requestParam != null && requestParam.endsWith("&")) {
+			requestParam = requestParam.substring(0, requestParam.length() - 1);
+		}
+		
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/deploy/apps?" + requestParam);
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			Type listType = new TypeToken<List<Application>>() {}.getType();
+			return new GsonBuilder().create().fromJson(responseString, listType);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
+	/**
 	 * 获取应用仓库信息
 	 * 
 	 * @param applicationRepoName	应用仓库名称
@@ -1146,6 +1264,67 @@ public class Fit2CloudClient {
 		String responseString = response.getBody();
 		if (code==200){
 			return new GsonBuilder().create().fromJson(responseString, ApplicationRepo.class);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
+	/**
+	 * 获取应用仓库信息
+	 * 
+	 * @param applicationRepoId	应用仓库ID
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public ApplicationRepo getApplicationRepo(Long applicationRepoId) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/deploy/repo/search?id=" + applicationRepoId);
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return new GsonBuilder().create().fromJson(responseString, ApplicationRepo.class);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
+	/**
+	 * 获取代码部署仓库列表
+	 * 
+	 * @param pageSize	分页大小,(可选,默认9999)
+	 * @param pageNum	分页编号,(可选,默认1)
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public List<ApplicationRepo> getApplicationRepoList(Integer pageSize, Integer pageNum) throws Fit2CloudException {
+		StringBuffer requestParamSb = new StringBuffer();
+		if(pageSize != null && pageSize.intValue() > 0) {
+			requestParamSb.append("pageSize=");
+			requestParamSb.append(pageSize);
+			requestParamSb.append("&");
+		}
+		if(pageNum != null && pageNum.intValue() > 0) {
+			requestParamSb.append("pageNum=");
+			requestParamSb.append(pageNum);
+			requestParamSb.append("&");
+		}
+		String requestParam = requestParamSb.toString();
+		if(requestParam != null && requestParam.endsWith("&")) {
+			requestParam = requestParam.substring(0, requestParam.length() - 1);
+		}
+		
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/deploy/repos?" + requestParam);
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			Type listType = new TypeToken<List<ApplicationRepo>>() {}.getType();
+			return new GsonBuilder().create().fromJson(responseString, listType);
 		}else{
 			throw new Fit2CloudException(responseString);
 		}
@@ -1344,6 +1523,74 @@ public class Fit2CloudClient {
 		String responseString = response.getBody();
 		if (code==200){
 			Type listType = new TypeToken<ArrayList<LaunchConfiguration>>() {}.getType();
+			return new GsonBuilder().create().fromJson(responseString, listType);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
+	public List<ServiceCatalogOrder> getServiceCatalogOrders(String status, String sort, String order, Integer pageSize, Integer pageNum) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint
+				+ "/servicecatalog/orders?status="+status+"&sort=" + sort + "&order=" + order
+				+ "&pageSize=" + pageSize + "&pageNum=" + pageNum);
+		System.out.println(restApiEndpoint
+				+ "/servicecatalog/orders?status="+status+"&sort=" + sort + "&order=" + order
+				+ "&pageSize=" + pageSize + "&pageNum=" + pageNum);
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			Type listType = new TypeToken<ArrayList<ServiceCatalogOrder>>() {}.getType();
+			return new GsonBuilder().create().fromJson(responseString, listType);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
+	public ServiceCatalogOrder updateServiceCatalogOrder(long orderId, String status) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/servicecatalog/order/"+orderId+"/update?status="+status);
+		System.out.println(restApiEndpoint + "/servicecatalog/order/"+orderId+"/update?status="+status);
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return new GsonBuilder().create().fromJson(responseString, ServiceCatalogOrder.class);
+		}else{
+			System.out.println("responseString :: "+responseString);
+			throw new Fit2CloudException(response.getBody());
+		}
+	}
+	
+	public List<ContactGroup> getContactGroupList(Integer pageSize, Integer pageNum) throws Fit2CloudException {
+		StringBuffer requestParamSb = new StringBuffer();
+		if(pageSize != null && pageSize.intValue() > 0) {
+			requestParamSb.append("pageSize=");
+			requestParamSb.append(pageSize);
+			requestParamSb.append("&");
+		}
+		if(pageNum != null && pageNum.intValue() > 0) {
+			requestParamSb.append("pageNum=");
+			requestParamSb.append(pageNum);
+			requestParamSb.append("&");
+		}
+		String requestParam = requestParamSb.toString();
+		if(requestParam != null && requestParam.endsWith("&")) {
+			requestParam = requestParam.substring(0, requestParam.length() - 1);
+		}
+		
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/contactgroups?" + requestParam);
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			Type listType = new TypeToken<List<ContactGroup>>() {}.getType();
 			return new GsonBuilder().create().fromJson(responseString, listType);
 		}else{
 			throw new Fit2CloudException(responseString);
