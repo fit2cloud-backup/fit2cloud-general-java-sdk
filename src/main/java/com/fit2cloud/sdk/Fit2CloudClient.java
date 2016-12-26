@@ -25,6 +25,7 @@ import com.fit2cloud.sdk.model.ClusterRole;
 import com.fit2cloud.sdk.model.ClusterRoleAlertLogging;
 import com.fit2cloud.sdk.model.ContactGroup;
 import com.fit2cloud.sdk.model.Event;
+import com.fit2cloud.sdk.model.KeyPair;
 import com.fit2cloud.sdk.model.KeyPassword;
 import com.fit2cloud.sdk.model.LaunchConfiguration;
 import com.fit2cloud.sdk.model.Logging;
@@ -32,6 +33,7 @@ import com.fit2cloud.sdk.model.Metric;
 import com.fit2cloud.sdk.model.MetricTop;
 import com.fit2cloud.sdk.model.Script;
 import com.fit2cloud.sdk.model.Server;
+import com.fit2cloud.sdk.model.ServerMetric;
 import com.fit2cloud.sdk.model.ServiceCatalogOrder;
 import com.fit2cloud.sdk.model.Tag;
 import com.fit2cloud.sdk.model.ViewScriptlog;
@@ -1591,6 +1593,72 @@ public class Fit2CloudClient {
 		String responseString = response.getBody();
 		if (code==200){
 			Type listType = new TypeToken<List<ContactGroup>>() {}.getType();
+			return new GsonBuilder().create().fromJson(responseString, listType);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
+	public List<KeyPair> getSupportedServerMetrics(Long clusterRoleId) throws Fit2CloudException {
+		if(clusterRoleId == null || clusterRoleId <= 0) {
+			throw new Fit2CloudException("请检查clusterRoleId的输入！");
+		}
+		
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/metrics?clusterRoleId=" + clusterRoleId);
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			Type listType = new TypeToken<List<KeyPair>>() {}.getType();
+			return new GsonBuilder().create().fromJson(responseString, listType);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
+	public List<ServerMetric> getServerMetrics(Long serverId, String metricName, Long startTime, Long endTime) throws Fit2CloudException {
+		if(serverId == null || serverId <= 0) {
+			throw new Fit2CloudException("请检查serverId的输入！");
+		}
+		
+		StringBuffer requestParamSb = new StringBuffer();
+		requestParamSb.append("serverId=");
+		requestParamSb.append(serverId);
+		requestParamSb.append("&");
+		
+		if(metricName != null && metricName.trim().length() > 0) {
+			requestParamSb.append("metricName=");
+			requestParamSb.append(metricName);
+			requestParamSb.append("&");
+		}
+		
+		if(startTime != null && startTime.intValue() > 0) {
+			requestParamSb.append("startTime=");
+			requestParamSb.append(startTime);
+			requestParamSb.append("&");
+		}
+		if(endTime != null && endTime.intValue() > 0) {
+			requestParamSb.append("endTime=");
+			requestParamSb.append(endTime);
+			requestParamSb.append("&");
+		}
+		String requestParam = requestParamSb.toString();
+		if(requestParam != null && requestParam.endsWith("&")) {
+			requestParam = requestParam.substring(0, requestParam.length() - 1);
+		}
+		
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/server/metrics?" + requestParam);
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			Type listType = new TypeToken<List<ServerMetric>>() {}.getType();
 			return new GsonBuilder().create().fromJson(responseString, listType);
 		}else{
 			throw new Fit2CloudException(responseString);

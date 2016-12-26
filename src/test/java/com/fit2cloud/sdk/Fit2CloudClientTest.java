@@ -18,6 +18,7 @@ import com.fit2cloud.sdk.model.ClusterParam;
 import com.fit2cloud.sdk.model.ClusterRole;
 import com.fit2cloud.sdk.model.ClusterRoleAlertLogging;
 import com.fit2cloud.sdk.model.Event;
+import com.fit2cloud.sdk.model.KeyPair;
 import com.fit2cloud.sdk.model.KeyPassword;
 import com.fit2cloud.sdk.model.LaunchConfiguration;
 import com.fit2cloud.sdk.model.Logging;
@@ -25,6 +26,8 @@ import com.fit2cloud.sdk.model.Metric;
 import com.fit2cloud.sdk.model.MetricTop;
 import com.fit2cloud.sdk.model.Script;
 import com.fit2cloud.sdk.model.Server;
+import com.fit2cloud.sdk.model.ServerMetric;
+import com.fit2cloud.sdk.model.ServiceCatalogOrder;
 import com.fit2cloud.sdk.model.Tag;
 import com.fit2cloud.sdk.model.ViewScriptlog;
 import com.google.gson.Gson;
@@ -498,5 +501,42 @@ public class Fit2CloudClientTest {
 		List<ApplicationDeploymentLog> list = client.getDeploymentLogs(1l);
 		assert list!=null && list.size()>0;
 		System.out.println(new Gson().toJson(list));
+	}
+	
+	@Test
+	public void testGetServiceCatalogOrders() throws Exception {
+		String sort = "created";
+		String order = "desc";
+		Integer pageSize = 3;
+		Integer pageNum = 1;
+		String status = "pending";
+		List<ServiceCatalogOrder> orders = client.getServiceCatalogOrders(status, sort, order, pageSize, pageNum);
+		assert orders!=null;
+		System.out.println(new Gson().toJson(orders));
+	}
+	
+	@Test
+	public void testUpdateServiceCatalogOrder() throws Exception {
+		String status = "rejectedd";
+		long orderId = 32l;
+		ServiceCatalogOrder result = client.updateServiceCatalogOrder(orderId, status);
+		System.out.println(new Gson().toJson(result));
+	}
+	
+	@Test
+	public void testGetSupportedServerMetrics() throws Exception {
+		Long clusterRoleId = 41l;
+		List<KeyPair> result = client.getSupportedServerMetrics(clusterRoleId);
+		System.out.println(new Gson().toJson(result));
+	}
+	
+	@Test
+	public void testGetServerMetrics() throws Exception {
+		Long serverId = 490l;
+		String metricName = "cpu-usage";
+		Long endTime = System.currentTimeMillis()/1000;
+		Long startTime = endTime - 60 * 60; // 1小时
+		List<ServerMetric> result = client.getServerMetrics(serverId, metricName, startTime, endTime);
+		System.out.println(new Gson().toJson(result));
 	}
 }
