@@ -24,6 +24,7 @@ import com.fit2cloud.sdk.model.LaunchConfiguration;
 import com.fit2cloud.sdk.model.Logging;
 import com.fit2cloud.sdk.model.Metric;
 import com.fit2cloud.sdk.model.MetricTop;
+import com.fit2cloud.sdk.model.PortMonitor;
 import com.fit2cloud.sdk.model.Script;
 import com.fit2cloud.sdk.model.Server;
 import com.fit2cloud.sdk.model.ServerMetric;
@@ -537,6 +538,21 @@ public class Fit2CloudClientTest {
 		Long endTime = System.currentTimeMillis()/1000;
 		Long startTime = endTime - 60 * 60; // 1小时
 		List<ServerMetric> result = client.getServerMetrics(serverId, metricName, startTime, endTime);
+		System.out.println(new Gson().toJson(result));
+	}
+	
+	@Test
+	public void testGetPortMonitors() throws Exception {
+		Integer pageSize = null;
+		Integer pageNum = null;
+		List<PortMonitor> result = client.getPortMonitors(pageSize, pageNum);
+		System.out.println(new Gson().toJson(result));
+	}
+	
+	@Test
+	public void testGetPortMonitor() throws Exception {
+		long portMonitorId = 2l;
+		PortMonitor result = client.getPortMonitor(portMonitorId);
 		System.out.println(new Gson().toJson(result));
 	}
 }

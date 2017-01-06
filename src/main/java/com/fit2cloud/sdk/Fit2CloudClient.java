@@ -31,6 +31,7 @@ import com.fit2cloud.sdk.model.LaunchConfiguration;
 import com.fit2cloud.sdk.model.Logging;
 import com.fit2cloud.sdk.model.Metric;
 import com.fit2cloud.sdk.model.MetricTop;
+import com.fit2cloud.sdk.model.PortMonitor;
 import com.fit2cloud.sdk.model.Script;
 import com.fit2cloud.sdk.model.Server;
 import com.fit2cloud.sdk.model.ServerMetric;
@@ -1531,11 +1532,19 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 获取服务目录订单列表
+	 * 
+	 * @param status	查询条件：订单状态，可选值参考 @see ServiceCatalogOrderStatus (可选)
+	 * @param sort		排序字段 (可选)
+	 * @param order		排序方式 (可选)
+	 * @param pageSize	分页大小,(可选,默认9999)
+	 * @param pageNum	分页编号,(可选,默认1)
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public List<ServiceCatalogOrder> getServiceCatalogOrders(String status, String sort, String order, Integer pageSize, Integer pageNum) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint
-				+ "/servicecatalog/orders?status="+status+"&sort=" + sort + "&order=" + order
-				+ "&pageSize=" + pageSize + "&pageNum=" + pageNum);
-		System.out.println(restApiEndpoint
 				+ "/servicecatalog/orders?status="+status+"&sort=" + sort + "&order=" + order
 				+ "&pageSize=" + pageSize + "&pageNum=" + pageNum);
 		Token accessToken = new Token("", "");
@@ -1551,9 +1560,16 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 更新知道服务订单状态
+	 * 
+	 * @param orderId	订单ID
+	 * @param status	更新后的订单状态，可选值参见 @see ServiceCatalogOrderStatus
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public ServiceCatalogOrder updateServiceCatalogOrder(long orderId, String status) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/servicecatalog/order/"+orderId+"/update?status="+status);
-		System.out.println(restApiEndpoint + "/servicecatalog/order/"+orderId+"/update?status="+status);
 		Token accessToken = new Token("", "");
 		service.signRequest(accessToken, request);
 		Response response = request.send();
@@ -1562,11 +1578,18 @@ public class Fit2CloudClient {
 		if (code==200){
 			return new GsonBuilder().create().fromJson(responseString, ServiceCatalogOrder.class);
 		}else{
-			System.out.println("responseString :: "+responseString);
 			throw new Fit2CloudException(response.getBody());
 		}
 	}
 	
+	/**
+	 * 获取通知组列表
+	 * 
+	 * @param pageSize	分页大小,(可选,默认9999)
+	 * @param pageNum	分页编号,(可选,默认1)
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public List<ContactGroup> getContactGroupList(Integer pageSize, Integer pageNum) throws Fit2CloudException {
 		StringBuffer requestParamSb = new StringBuffer();
 		if(pageSize != null && pageSize.intValue() > 0) {
@@ -1599,6 +1622,13 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 获取指定主机组下的所有监控项
+	 * 
+	 * @param clusterRoleId	主机组ID
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public List<KeyPair> getSupportedServerMetrics(Long clusterRoleId) throws Fit2CloudException {
 		if(clusterRoleId == null || clusterRoleId <= 0) {
 			throw new Fit2CloudException("请检查clusterRoleId的输入！");
@@ -1619,6 +1649,16 @@ public class Fit2CloudClient {
 		}
 	}
 	
+	/**
+	 * 获取指定条件的监控数据
+	 * 
+	 * @param serverId	主机ID
+	 * @param metricName	监控项 (可选)，可选值参见{@link #getSupportedServerMetrics(Long)}
+	 * @param startTime	查询开始时间点(可选)
+	 * @param endTime	查询结束时间点(可选)
+	 * @return
+	 * @throws Fit2CloudException
+	 */
 	public List<ServerMetric> getServerMetrics(Long serverId, String metricName, Long startTime, Long endTime) throws Fit2CloudException {
 		if(serverId == null || serverId <= 0) {
 			throw new Fit2CloudException("请检查serverId的输入！");
@@ -1660,6 +1700,69 @@ public class Fit2CloudClient {
 		if (code==200){
 			Type listType = new TypeToken<List<ServerMetric>>() {}.getType();
 			return new GsonBuilder().create().fromJson(responseString, listType);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
+	/**
+	 * 获取端口监控列表(端口监控间隔时间为5分钟）
+	 * 
+	 * @param pageSize	分页大小,(可选,默认9999)
+	 * @param pageNum	分页编号,(可选,默认1)
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public List<PortMonitor> getPortMonitors(Integer pageSize, Integer pageNum) throws Fit2CloudException {
+		StringBuffer requestParamSb = new StringBuffer();
+		if(pageSize != null && pageSize.intValue() > 0) {
+			requestParamSb.append("pageSize=");
+			requestParamSb.append(pageSize);
+			requestParamSb.append("&");
+		}
+		if(pageNum != null && pageNum.intValue() > 0) {
+			requestParamSb.append("pageNum=");
+			requestParamSb.append(pageNum);
+			requestParamSb.append("&");
+		}
+		String requestParam = requestParamSb.toString();
+		if(requestParam != null && requestParam.endsWith("&")) {
+			requestParam = requestParam.substring(0, requestParam.length() - 1);
+		}
+		
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/monitor/ports?" + requestParam);
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			Type listType = new TypeToken<List<PortMonitor>>() {}.getType();
+			return new GsonBuilder().create().fromJson(responseString, listType);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
+	/**
+	 * 获取指定监控项的端口监控信息(端口监控间隔时间为5分钟）
+	 * 
+	 * @param pageSize	分页大小,(可选,默认9999)
+	 * @param pageNum	分页编号,(可选,默认1)
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public PortMonitor getPortMonitor(long portMonitorId) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/monitor/port?portMonitorId=" + portMonitorId);
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return new GsonBuilder().create().fromJson(responseString, PortMonitor.class);
 		}else{
 			throw new Fit2CloudException(responseString);
 		}
