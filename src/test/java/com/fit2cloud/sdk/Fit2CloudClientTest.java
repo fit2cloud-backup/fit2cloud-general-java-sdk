@@ -555,4 +555,11 @@ public class Fit2CloudClientTest {
 		PortMonitor result = client.getPortMonitor(portMonitorId);
 		System.out.println(new Gson().toJson(result));
 	}
+	
+	@Test
+	public void testGetServerSSHUrl() throws Exception {
+		long serverId = 2l;
+		String result = client.getServerSSHUrl(serverId);
+		System.out.println(result);
+	}
 }

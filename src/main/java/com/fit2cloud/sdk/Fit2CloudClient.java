@@ -1767,4 +1767,26 @@ public class Fit2CloudClient {
 			throw new Fit2CloudException(responseString);
 		}
 	}
+	
+	/**
+	 * 获取指定虚机的ssh登录url
+	 * 
+	 * @param serverId	虚机ID
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public String getServerSSHUrl(long serverId) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/server/"+serverId+"/openssh");
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return responseString;
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
 }
