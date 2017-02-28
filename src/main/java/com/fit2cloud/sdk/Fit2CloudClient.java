@@ -25,6 +25,7 @@ import com.fit2cloud.sdk.model.ClusterRole;
 import com.fit2cloud.sdk.model.ClusterRoleAlertLogging;
 import com.fit2cloud.sdk.model.ContactGroup;
 import com.fit2cloud.sdk.model.Event;
+import com.fit2cloud.sdk.model.GroupEnv;
 import com.fit2cloud.sdk.model.KeyPair;
 import com.fit2cloud.sdk.model.KeyPassword;
 import com.fit2cloud.sdk.model.LaunchConfiguration;
@@ -1623,6 +1624,27 @@ public class Fit2CloudClient {
 	}
 	
 	/**
+	 * 获取指定通知组信息
+	 * 
+	 * @param contactGroupId	通知组ID
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public ContactGroup getContactGroup(Long contactGroupId) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/contactgroup/" + contactGroupId);
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return new GsonBuilder().create().fromJson(responseString, ContactGroup.class);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
+	/**
 	 * 获取指定主机组下的所有监控项
 	 * 
 	 * @param clusterRoleId	主机组ID
@@ -1785,6 +1807,26 @@ public class Fit2CloudClient {
 		String responseString = response.getBody();
 		if (code==200){
 			return responseString;
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+	
+	/**
+	 * 获取当前工作空间信息
+	 * 
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public GroupEnv getGroupEnv() throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/group/info");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return new GsonBuilder().create().fromJson(responseString, GroupEnv.class);
 		}else{
 			throw new Fit2CloudException(responseString);
 		}

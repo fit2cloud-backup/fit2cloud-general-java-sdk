@@ -17,7 +17,9 @@ import com.fit2cloud.sdk.model.Cluster;
 import com.fit2cloud.sdk.model.ClusterParam;
 import com.fit2cloud.sdk.model.ClusterRole;
 import com.fit2cloud.sdk.model.ClusterRoleAlertLogging;
+import com.fit2cloud.sdk.model.ContactGroup;
 import com.fit2cloud.sdk.model.Event;
+import com.fit2cloud.sdk.model.GroupEnv;
 import com.fit2cloud.sdk.model.KeyPair;
 import com.fit2cloud.sdk.model.KeyPassword;
 import com.fit2cloud.sdk.model.LaunchConfiguration;
@@ -561,5 +563,18 @@ public class Fit2CloudClientTest {
 		long serverId = 2l;
 		String result = client.getServerSSHUrl(serverId);
 		System.out.println(result);
+	}
+	
+	@Test
+	public void testGetContactGroup() throws Exception {
+		long contactGroupId = 1l;
+		ContactGroup result = client.getContactGroup(contactGroupId);
+		System.out.println(new Gson().toJson(result));
+	}
+	
+	@Test
+	public void testGetGroupEnv() throws Exception {
+		GroupEnv result = client.getGroupEnv();
+		System.out.println(new Gson().toJson(result));
 	}
 }
