@@ -37,6 +37,7 @@ import com.fit2cloud.sdk.model.Script;
 import com.fit2cloud.sdk.model.Server;
 import com.fit2cloud.sdk.model.ServerMetric;
 import com.fit2cloud.sdk.model.ServiceCatalogOrder;
+import com.fit2cloud.sdk.model.SfServer;
 import com.fit2cloud.sdk.model.Tag;
 import com.fit2cloud.sdk.model.ViewScriptlog;
 import com.google.gson.GsonBuilder;
@@ -1831,4 +1832,30 @@ public class Fit2CloudClient {
 			throw new Fit2CloudException(responseString);
 		}
 	}
+	
+	/**
+	 * 将自服务平台的虚机注册到devops平台
+	 * 
+	 * @param sfServerId	自服务屁股疼虚机ID
+	 * @param cloudServerId	自服务屁股疼虚机对应的cloudServer ID
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public Server registerServer(String sfServerId, Long cloudServerId) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/sfserver/register");
+		request.addBodyParameter("sfServerId", sfServerId);
+		request.addBodyParameter("cloudServerId", String.valueOf(cloudServerId));
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return new GsonBuilder().create().fromJson(responseString, Server.class);
+		}else{
+			throw new Fit2CloudException(response.getBody());
+		}
+	}
+
 }
