@@ -577,4 +577,17 @@ public class Fit2CloudClientTest {
 		GroupEnv result = client.getGroupEnv();
 		System.out.println(new Gson().toJson(result));
 	}
+	
+	@Test
+	public void registerServerTest() throws Exception {
+		String sfServerId = "33c32057-4f38-46ab-9b7d-9648c2b47852";
+		Long cloudServerId = 28948l;
+		boolean installAgent = true;
+		String user = "root";
+		String password = null;
+		String key = "testkey";
+		Long port = 33l;
+		Server server = client.registerServer(sfServerId, cloudServerId, installAgent, user , password, key, port);
+		System.out.println(new Gson().toJson(server));
+	}
 }

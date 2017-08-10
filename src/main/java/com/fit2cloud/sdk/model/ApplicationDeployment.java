@@ -15,6 +15,9 @@ public class ApplicationDeployment {
 	private String msg;
 	private Long applicationId;
 	private Long contactGroupId;
+	private Integer gatedLaunchEnable;
+	private Long gatedLaunchDeploymentId;
+	private Long userId;
 	public Long getId() {
 		return id;
 	}
@@ -92,5 +95,23 @@ public class ApplicationDeployment {
 	}
 	public void setContactGroupId(Long contactGroupId) {
 		this.contactGroupId = contactGroupId;
+	}
+	public Integer getGatedLaunchEnable() {
+		return gatedLaunchEnable;
+	}
+	public void setGatedLaunchEnable(Integer gatedLaunchEnable) {
+		this.gatedLaunchEnable = gatedLaunchEnable;
+	}
+	public Long getGatedLaunchDeploymentId() {
+		return gatedLaunchDeploymentId;
+	}
+	public void setGatedLaunchDeploymentId(Long gatedLaunchDeploymentId) {
+		this.gatedLaunchDeploymentId = gatedLaunchDeploymentId;
+	}
+	public Long getUserId() {
+		return userId;
+	}
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 }

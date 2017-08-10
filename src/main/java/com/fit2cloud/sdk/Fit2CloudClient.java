@@ -1838,13 +1838,32 @@ public class Fit2CloudClient {
 	 * 
 	 * @param sfServerId	自服务屁股疼虚机ID
 	 * @param cloudServerId	自服务屁股疼虚机对应的cloudServer ID
+	 * @param installAgent	是否自动安装agent
+	 * @param user			系统的登录用户名
+	 * @param password		系统的登录密码
+	 * @param key			系统的登录秘钥
+	 * @param port			系统的登录端口
 	 * @return
 	 * @throws Fit2CloudException
 	 */
-	public Server registerServer(String sfServerId, Long cloudServerId) throws Fit2CloudException {
+	public Server registerServer(String sfServerId, Long cloudServerId, boolean installAgent, String user, String password, String key, Long port) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/sfserver/register");
 		request.addBodyParameter("sfServerId", sfServerId);
 		request.addBodyParameter("cloudServerId", String.valueOf(cloudServerId));
+		request.addBodyParameter("installAgent", String.valueOf(installAgent));
+		if(user != null && user.trim().length() > 0) {
+			request.addBodyParameter("user", user);
+		}
+		if(password != null && password.trim().length() > 0) {
+			request.addBodyParameter("password", password);
+		}
+		if(key != null && key.trim().length() > 0) {
+			request.addBodyParameter("key", key);
+		}
+		if(port == null || port <= 0) {
+			port = 22l;
+		}
+		request.addBodyParameter("port", String.valueOf(port));
 		request.setCharset("UTF-8");
 		Token accessToken = new Token("", "");
 		service.signRequest(accessToken, request);
