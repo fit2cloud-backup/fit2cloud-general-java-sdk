@@ -6,6 +6,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fit2cloud.sdk.model.*;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
@@ -13,33 +14,6 @@ import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
-import com.fit2cloud.sdk.model.Application;
-import com.fit2cloud.sdk.model.ApplicationDeployment;
-import com.fit2cloud.sdk.model.ApplicationDeploymentLog;
-import com.fit2cloud.sdk.model.ApplicationRepo;
-import com.fit2cloud.sdk.model.ApplicationRevision;
-import com.fit2cloud.sdk.model.CloudCredential;
-import com.fit2cloud.sdk.model.Cluster;
-import com.fit2cloud.sdk.model.ClusterParam;
-import com.fit2cloud.sdk.model.ClusterRole;
-import com.fit2cloud.sdk.model.ClusterRoleAlertLogging;
-import com.fit2cloud.sdk.model.ContactGroup;
-import com.fit2cloud.sdk.model.Event;
-import com.fit2cloud.sdk.model.GroupEnv;
-import com.fit2cloud.sdk.model.KeyPair;
-import com.fit2cloud.sdk.model.KeyPassword;
-import com.fit2cloud.sdk.model.LaunchConfiguration;
-import com.fit2cloud.sdk.model.Logging;
-import com.fit2cloud.sdk.model.Metric;
-import com.fit2cloud.sdk.model.MetricTop;
-import com.fit2cloud.sdk.model.PortMonitor;
-import com.fit2cloud.sdk.model.Script;
-import com.fit2cloud.sdk.model.Server;
-import com.fit2cloud.sdk.model.ServerMetric;
-import com.fit2cloud.sdk.model.ServiceCatalogOrder;
-import com.fit2cloud.sdk.model.SfServer;
-import com.fit2cloud.sdk.model.Tag;
-import com.fit2cloud.sdk.model.ViewScriptlog;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
@@ -1165,6 +1139,28 @@ public class Fit2CloudClient {
 		String responseString = response.getBody();
 		if (code==200){
 			Type listType = new TypeToken<ArrayList<ApplicationDeploymentLog>>() {}.getType();
+			return new GsonBuilder().create().fromJson(responseString, listType);
+		}else{
+			throw new Fit2CloudException(responseString);
+		}
+	}
+
+	/**
+	 * 获取指定代码部署任务中,每台主机部署的情况
+	 *
+	 * @param deploymentId	代码部署任务ID
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public List<ApplicationDeploymentEventLog> getDeploymentEventLogs(Long deploymentId) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.GET, restApiEndpoint + "/deploymentEventlog/"+deploymentId+"/list");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			Type listType = new TypeToken<ArrayList<ApplicationDeploymentEventLog>>() {}.getType();
 			return new GsonBuilder().create().fromJson(responseString, listType);
 		}else{
 			throw new Fit2CloudException(responseString);

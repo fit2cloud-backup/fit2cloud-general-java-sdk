@@ -2,58 +2,39 @@ package com.fit2cloud.sdk;
 
 import java.util.List;
 
+import com.fit2cloud.sdk.model.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.fit2cloud.sdk.model.Application;
-import com.fit2cloud.sdk.model.ApplicationDeployPolicyType;
-import com.fit2cloud.sdk.model.ApplicationDeployment;
-import com.fit2cloud.sdk.model.ApplicationDeploymentLog;
-import com.fit2cloud.sdk.model.ApplicationRepo;
-import com.fit2cloud.sdk.model.ApplicationRevision;
-import com.fit2cloud.sdk.model.CloudCredential;
-import com.fit2cloud.sdk.model.Cluster;
-import com.fit2cloud.sdk.model.ClusterParam;
-import com.fit2cloud.sdk.model.ClusterRole;
-import com.fit2cloud.sdk.model.ClusterRoleAlertLogging;
-import com.fit2cloud.sdk.model.ContactGroup;
-import com.fit2cloud.sdk.model.Event;
-import com.fit2cloud.sdk.model.GroupEnv;
-import com.fit2cloud.sdk.model.KeyPair;
-import com.fit2cloud.sdk.model.KeyPassword;
-import com.fit2cloud.sdk.model.LaunchConfiguration;
-import com.fit2cloud.sdk.model.Logging;
-import com.fit2cloud.sdk.model.Metric;
-import com.fit2cloud.sdk.model.MetricTop;
-import com.fit2cloud.sdk.model.PortMonitor;
-import com.fit2cloud.sdk.model.Script;
-import com.fit2cloud.sdk.model.Server;
-import com.fit2cloud.sdk.model.ServerMetric;
-import com.fit2cloud.sdk.model.ServiceCatalogOrder;
-import com.fit2cloud.sdk.model.Tag;
-import com.fit2cloud.sdk.model.ViewScriptlog;
 import com.google.gson.Gson;
 
 public class Fit2CloudClientTest {
 	
-	private String apiKey;
+	private String apiConsumerKey;
 	private String apiSecret;
 	private String apiEndpoint;
 	private Fit2CloudClient client;
 	
 	@Before
 	public void setUp() throws Exception {
-		this.apiKey = "dGFvQGZpdDJjbG91ZC5jb20=";
-		this.apiSecret = "90644295-611f-4bd9-b5d2-e821e1eaeac2";
+		this.apiConsumerKey = "Y2hpbGFvcWlAZ21haWwuY29t";
+		this.apiSecret = "36265cf2-eeef-4326-9ced-f46379dd3104";
 		this.apiEndpoint = "http://localhost:6608/rest/";
-		this.client = new Fit2CloudClient(apiKey, apiSecret, apiEndpoint);
+		this.client = new Fit2CloudClient(apiConsumerKey, apiSecret, apiEndpoint);
 	}
 
 	@After
 	public void tearDown() throws Exception {
 	}
-
+	@Test
+	public void getDeploymentEventLogsTset() throws Exception{
+		List<ApplicationDeploymentEventLog> list = this.client.getDeploymentEventLogs((Long.parseLong(String.valueOf(230))));
+		System.out.println(list.get(0));
+		for (ApplicationDeploymentEventLog applicationDeploymentEventLog:list){
+				System.out.println(applicationDeploymentEventLog.getEventName()+":"+applicationDeploymentEventLog.getMsg());
+		}
+	}
 	@Test
 	public void testGetClusters() throws Exception {
 		System.out.println("List clusters...");
