@@ -6,7 +6,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fit2cloud.sdk.model.*;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
@@ -14,6 +13,34 @@ import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
+import com.fit2cloud.sdk.model.Application;
+import com.fit2cloud.sdk.model.ApplicationDeployment;
+import com.fit2cloud.sdk.model.ApplicationDeploymentEventLog;
+import com.fit2cloud.sdk.model.ApplicationDeploymentLog;
+import com.fit2cloud.sdk.model.ApplicationRepo;
+import com.fit2cloud.sdk.model.ApplicationRevision;
+import com.fit2cloud.sdk.model.CloudCredential;
+import com.fit2cloud.sdk.model.Cluster;
+import com.fit2cloud.sdk.model.ClusterParam;
+import com.fit2cloud.sdk.model.ClusterRole;
+import com.fit2cloud.sdk.model.ClusterRoleAlertLogging;
+import com.fit2cloud.sdk.model.CmdbVm;
+import com.fit2cloud.sdk.model.ContactGroup;
+import com.fit2cloud.sdk.model.Event;
+import com.fit2cloud.sdk.model.GroupEnv;
+import com.fit2cloud.sdk.model.KeyPair;
+import com.fit2cloud.sdk.model.KeyPassword;
+import com.fit2cloud.sdk.model.LaunchConfiguration;
+import com.fit2cloud.sdk.model.Logging;
+import com.fit2cloud.sdk.model.Metric;
+import com.fit2cloud.sdk.model.MetricTop;
+import com.fit2cloud.sdk.model.PortMonitor;
+import com.fit2cloud.sdk.model.Script;
+import com.fit2cloud.sdk.model.Server;
+import com.fit2cloud.sdk.model.ServerMetric;
+import com.fit2cloud.sdk.model.ServiceCatalogOrder;
+import com.fit2cloud.sdk.model.Tag;
+import com.fit2cloud.sdk.model.ViewScriptlog;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
@@ -1868,6 +1895,32 @@ public class Fit2CloudClient {
 		String responseString = response.getBody();
 		if (code==200){
 			return new GsonBuilder().create().fromJson(responseString, Server.class);
+		}else{
+			throw new Fit2CloudException(response.getBody());
+		}
+	}
+	
+	public CmdbVm registerCmdbServer(Long cmdbServerId, String user, String password, Long port) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/cmdbserver/register");
+		request.addBodyParameter("cmdbServerId", String.valueOf(cmdbServerId));
+		if(user != null && user.trim().length() > 0) {
+			request.addBodyParameter("user", user);
+		}
+		if(password != null && password.trim().length() > 0) {
+			request.addBodyParameter("password", password);
+		}
+		if(port == null || port <= 0) {
+			port = 22l;
+		}
+		request.addBodyParameter("port", String.valueOf(port));
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return new GsonBuilder().create().fromJson(responseString, CmdbVm.class);
 		}else{
 			throw new Fit2CloudException(response.getBody());
 		}
