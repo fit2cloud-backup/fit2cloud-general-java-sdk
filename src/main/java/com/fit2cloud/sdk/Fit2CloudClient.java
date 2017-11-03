@@ -1900,19 +1900,9 @@ public class Fit2CloudClient {
 		}
 	}
 	
-	public CmdbVm registerCmdbServer(Long cmdbServerId, String user, String password, Long port) throws Fit2CloudException {
+	public CmdbVm registerCmdbServer(Long cmdbServerId) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/cmdbserver/register");
 		request.addBodyParameter("cmdbServerId", String.valueOf(cmdbServerId));
-		if(user != null && user.trim().length() > 0) {
-			request.addBodyParameter("user", user);
-		}
-		if(password != null && password.trim().length() > 0) {
-			request.addBodyParameter("password", password);
-		}
-		if(port == null || port <= 0) {
-			port = 22l;
-		}
-		request.addBodyParameter("port", String.valueOf(port));
 		request.setCharset("UTF-8");
 		Token accessToken = new Token("", "");
 		service.signRequest(accessToken, request);
