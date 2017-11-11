@@ -602,8 +602,14 @@ public class Fit2CloudClientTest {
 	
 	@Test
 	public void registerCmdbServerTest() throws Exception {
+		String sfServerId = "33c32057-4f38-46ab-9b7d-9648c2b47852";
 		Long cmdbServerId = 5l;
-		CmdbVm server = client.registerCmdbServer(cmdbServerId);
+		boolean installAgent = true;
+		String user = "root";
+		String password = null;
+		String key = "testkey";
+		Long port = 33l;
+		CmdbVm server = client.registerCmdbServer(sfServerId, cmdbServerId, installAgent, user , password, key, port);
 		System.out.println(new Gson().toJson(server));
 	}
 	
