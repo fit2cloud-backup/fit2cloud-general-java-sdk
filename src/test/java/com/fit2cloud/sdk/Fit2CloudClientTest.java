@@ -603,7 +603,7 @@ public class Fit2CloudClientTest {
 	@Test
 	public void registerCmdbServerTest() throws Exception {
 		String sfServerId = "33c32057-4f38-46ab-9b7d-9648c2b47852";
-		Long cmdbServerId = 5l;
+		Long cmdbServerId = 5l;//cmdb_vm_id
 		boolean installAgent = true;
 		String user = "root";
 		String password = null;
