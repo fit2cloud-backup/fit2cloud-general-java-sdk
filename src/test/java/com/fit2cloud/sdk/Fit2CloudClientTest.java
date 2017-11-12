@@ -614,10 +614,10 @@ public class Fit2CloudClientTest {
 	}
 	
 	@Test
-	public void currentTimeMillisTest2() throws Exception {
-		Long t = System.currentTimeMillis();
-		System.out.println(t);
-		System.out.println(t/1000);
-		
+	public void registerCmdbServer2Test() throws Exception {
+		Long cmdbServerId = 5l;
+		CmdbVm server = client.registerCmdbServer(cmdbServerId);
+		System.out.println(new Gson().toJson(server));
 	}
+	
 }

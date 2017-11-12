@@ -1930,5 +1930,22 @@ public class Fit2CloudClient {
 			throw new Fit2CloudException(response.getBody());
 		}
 	}
+	
+	public CmdbVm registerCmdbServer(Long cmdbServerId) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/cmdbserver/register");
+		request.addBodyParameter("cmdbServerId", String.valueOf(cmdbServerId));
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code==200){
+			return new GsonBuilder().create().fromJson(responseString, CmdbVm.class);
+		}else{
+			throw new Fit2CloudException(response.getBody());
+		}
+	}
+
 
 }
