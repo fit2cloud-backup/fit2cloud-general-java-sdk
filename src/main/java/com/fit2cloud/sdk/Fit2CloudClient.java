@@ -1900,11 +1900,10 @@ public class Fit2CloudClient {
 		}
 	}
 	
-	public CmdbVm registerCmdbServer(Long userId, String sfServerId, Long cmdbServerId, boolean installAgent, String user, String password, String key, Long port) throws Fit2CloudException {
+	public CmdbVm registerCmdbServer(String sfServerId, Long cmdbServerId, boolean installAgent, String user, String password, String key, Long port) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/cmdbserver/register");
 		request.addBodyParameter("sfServerId", sfServerId);
 		request.addBodyParameter("cmdbServerId", String.valueOf(cmdbServerId));
-		request.addBodyParameter("userId", String.valueOf(userId));
 		request.addBodyParameter("installAgent", String.valueOf(installAgent));
 		if(user != null && user.trim().length() > 0) {
 			request.addBodyParameter("user", user);
@@ -1932,10 +1931,9 @@ public class Fit2CloudClient {
 		}
 	}
 	
-	public CmdbVm registerCmdbServer(Long userId, Long cmdbServerId) throws Fit2CloudException {
+	public CmdbVm registerCmdbServer(Long cmdbServerId) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/cmdbserver/register");
 		request.addBodyParameter("cmdbServerId", String.valueOf(cmdbServerId));
-		request.addBodyParameter("userId", String.valueOf(userId));
 		request.setCharset("UTF-8");
 		Token accessToken = new Token("", "");
 		service.signRequest(accessToken, request);
