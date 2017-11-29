@@ -46,8 +46,8 @@ public class Fit2CloudClientTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		this.apiConsumerKey = "d2VpQGZpdDJjbG91ZC5jb20=";
-		this.apiSecret = "c2d21c26-d813-4810-826c-b0ba796de54a";
+		this.apiConsumerKey = "MTUtOTYzMDAzY2U=";
+		this.apiSecret = "0294541f-951f-4200-b134-f61de477380a";
 		this.apiEndpoint = "http://localhost:6608/rest/";
 		this.client = new Fit2CloudClient(apiConsumerKey,apiSecret,apiEndpoint);
 	}
@@ -618,6 +618,13 @@ public class Fit2CloudClientTest {
 		Long cmdbServerId = 5l;
 		CmdbVm server = client.registerCmdbServer(cmdbServerId);
 		System.out.println(new Gson().toJson(server));
+	}
+	
+	@Test
+	public void syncClusterAndRoleTest() throws Exception {
+		Long cmdbServerId = 270l;
+		boolean result = client.syncClusterAndRole(cmdbServerId);
+		System.out.println(new Gson().toJson(result));
 	}
 	
 }

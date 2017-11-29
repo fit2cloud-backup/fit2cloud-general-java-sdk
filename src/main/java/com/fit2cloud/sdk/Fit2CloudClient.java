@@ -1947,5 +1947,19 @@ public class Fit2CloudClient {
 		}
 	}
 
+	public boolean syncClusterAndRole(Long cmdbServerId) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/cmdbserver/syncClusterAndRole");
+		request.addBodyParameter("cmdbServerId", String.valueOf(cmdbServerId));
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		if (code==200){
+			return true;
+		}else{
+			return false;
+		}
+	}
 
 }
