@@ -1947,9 +1947,26 @@ public class Fit2CloudClient {
 		}
 	}
 
-	public boolean syncClusterAndRole(Long cmdbServerId) throws Fit2CloudException {
-		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/cmdbserver/syncClusterAndRole");
-		request.addBodyParameter("cmdbServerId", String.valueOf(cmdbServerId));
+	public boolean updateCluster(Long clusterId, String clusterName) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/cmdbserver/updateCluster");
+		request.addBodyParameter("clusterId", String.valueOf(clusterId));
+		request.addBodyParameter("clusterName", clusterName);
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		if (code==200){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	public boolean updateClusterRole(Long clusterRoleId, String clusterRoleName) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/cmdbserver/updateClusterRole");
+		request.addBodyParameter("clusterRoleId", String.valueOf(clusterRoleId));
+		request.addBodyParameter("clusterRoleName", clusterRoleName);
 		request.setCharset("UTF-8");
 		Token accessToken = new Token("", "");
 		service.signRequest(accessToken, request);

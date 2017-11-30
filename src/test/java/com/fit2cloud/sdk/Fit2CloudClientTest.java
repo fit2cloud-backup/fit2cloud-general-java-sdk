@@ -621,9 +621,18 @@ public class Fit2CloudClientTest {
 	}
 	
 	@Test
-	public void syncClusterAndRoleTest() throws Exception {
-		Long cmdbServerId = 270l;
-		boolean result = client.syncClusterAndRole(cmdbServerId);
+	public void updateClusterTest() throws Exception {
+		Long clusterId = 51l;
+		String clusterName = "mes生产集群2";
+		boolean result = client.updateCluster(clusterId, clusterName);
+		System.out.println(new Gson().toJson(result));
+	}
+	
+	@Test
+	public void updateClusterRoleTest() throws Exception {
+		Long clusterRoleId = 36l;
+		String clusterRoleName = "mes应用2";
+		boolean result = client.updateClusterRole(clusterRoleId, clusterRoleName);
 		System.out.println(new Gson().toJson(result));
 	}
 	
