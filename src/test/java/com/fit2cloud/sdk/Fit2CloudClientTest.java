@@ -636,4 +636,18 @@ public class Fit2CloudClientTest {
 		System.out.println(new Gson().toJson(result));
 	}
 	
+	@Test
+	public void changeClusterAndRoleTest() throws Exception {
+		Long cmdbServerId = 5l;//cmdb_vm_id
+		String clusterName = "testCluster";
+		String clusterRoleName = "testClusterRole";
+		String sshIp = "172.16.160.80";
+		Long sshPort = 22l;
+		String sshUser = "root";
+		String sshPwd = "cloudpi";
+		String osType = "linux";
+		boolean result = client.changeClusterAndRole(cmdbServerId, clusterName, clusterRoleName , sshIp, sshPort, sshUser, sshPwd, osType);
+		System.out.println(result);
+	}
+	
 }
