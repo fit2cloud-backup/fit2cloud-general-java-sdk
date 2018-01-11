@@ -42,6 +42,7 @@ import com.fit2cloud.sdk.model.ServerMetric;
 import com.fit2cloud.sdk.model.ServiceCatalogOrder;
 import com.fit2cloud.sdk.model.Tag;
 import com.fit2cloud.sdk.model.ViewScriptlog;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
@@ -2136,13 +2137,35 @@ public class Fit2CloudClient {
 	 */
 	public Server registerServer(Server server, boolean installAgent, String user,
 								 String password, String key, Long port) throws Fit2CloudException {
-		// TODO
-		// 交给徐工实现啦
-		Server result = new Server();
-		result.setId(new Random().nextLong());
-		return result;
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/server/import");
+		request.addBodyParameter("server", new Gson().toJson(server));
+		request.addBodyParameter("installAgent", String.valueOf(installAgent));
+		if (user != null && user.trim().length() > 0) {
+			request.addBodyParameter("user", user);
+		}
+		if (password != null && password.trim().length() > 0) {
+			request.addBodyParameter("password", password);
+		}
+		if (key != null && key.trim().length() > 0) {
+			request.addBodyParameter("key", key);
+		}
+		if (port == null || port <= 0) {
+			port = 22l;
+		}
+		request.addBodyParameter("port", String.valueOf(port));
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code == 200) {
+			return new GsonBuilder().create().fromJson(responseString, Server.class);
+		} else {
+			throw new Fit2CloudException(response.getBody());
+		}
 	}
-
+	
 	public CmdbVm registerCmdbServer(String sfServerId, Long cmdbServerId, boolean installAgent, String user,
 			String password, String key, Long port) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/cmdbserver/register");
