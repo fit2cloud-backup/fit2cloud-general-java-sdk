@@ -5,6 +5,7 @@ import java.lang.reflect.Type;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.model.OAuthRequest;
@@ -2113,6 +2114,33 @@ public class Fit2CloudClient {
 		} else {
 			throw new Fit2CloudException(response.getBody());
 		}
+	}
+
+	/**
+	 * 将服务器注册到devops平台
+	 *
+	 * @param server
+	 *            server对象
+	 * @param installAgent
+	 *            是否自动安装agent
+	 * @param user
+	 *            系统的登录用户名
+	 * @param password
+	 *            系统的登录密码
+	 * @param key
+	 *            系统的登录秘钥
+	 * @param port
+	 *            系统的登录端口
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public Server registerServer(Server server, boolean installAgent, String user,
+								 String password, String key, Long port) throws Fit2CloudException {
+		// TODO
+		// 交给徐工实现啦
+		Server result = new Server();
+		result.setId(new Random().nextLong());
+		return result;
 	}
 
 	public CmdbVm registerCmdbServer(String sfServerId, Long cmdbServerId, boolean installAgent, String user,
