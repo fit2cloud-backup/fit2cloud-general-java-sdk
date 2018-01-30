@@ -268,9 +268,28 @@ public class Fit2CloudClient {
 	 * @throws Fit2CloudException
 	 */
 	public long executeScript(long serverId, String scriptContent) throws Fit2CloudException {
+		return executeScript(serverId, scriptContent, null);
+	}
+	
+	/**
+	 * 在指定虚机上执行指定脚本
+	 * 
+	 * @param serverId
+	 * 			虚机ID
+	 * @param scriptContent
+	 * 			脚本内容
+	 * @param scriptType
+	 * 			脚本类型
+	 * @return	返回执行脚本事件ID, 可根据此ID获取返回的所有执行日志
+	 * @throws Fit2CloudException
+	 */
+	public long executeScript(long serverId, String scriptContent, String scriptType) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, executeScriptInServerUrl);
 		request.addBodyParameter("serverId", String.valueOf(serverId));
 		request.addBodyParameter("scriptContent", scriptContent);
+		if(scriptType != null && scriptType.trim().length() > 0) {
+			request.addBodyParameter("scriptType", scriptType);
+		}
 		request.setCharset("UTF-8");
 		Token accessToken = new Token("", "");
 		service.signRequest(accessToken, request);
