@@ -2232,6 +2232,42 @@ public class Fit2CloudClient {
 			throw new Fit2CloudException(response.getBody());
 		}
 	}
+	
+	/**
+	 * 创建集群
+	 * 
+	 * @param name	集群名称
+	 * @param description	集群描述
+	 * @param envType	所属环境（development，test, staging, production）
+	 * @param projectId	所属业务系统ID
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public Cluster addCluster(String name, String description, String envType,
+			Long projectId) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/cluster/add");
+		request.addBodyParameter("name", name);
+		if (description != null) {
+			request.addBodyParameter("description", description);
+		}
+		if (envType != null) {
+			request.addBodyParameter("envType", envType);
+		}
+		if (projectId != null) {
+			request.addBodyParameter("projectId", String.valueOf(projectId));
+		}
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code == 200) {
+			return new GsonBuilder().create().fromJson(responseString, Cluster.class);
+		} else {
+			throw new Fit2CloudException(response.getBody());
+		}
+	}
 
 	public boolean updateCluster(Long clusterId, String clusterName) throws Fit2CloudException {
 		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/cmdbserver/updateCluster");
