@@ -1024,6 +1024,24 @@ public class Fit2CloudClient {
 		}
 	}
 
+	public List<ApplicationRevision> getApplicationRevisionList(Long applicationId,Integer pageSize, Integer pageNum) throws Fit2CloudException{
+		OAuthRequest request = new OAuthRequest(Verb.GET,
+				restApiEndpoint + "/deploy/"+applicationId +"/revision");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code == 200) {
+			Type listType = new TypeToken<ArrayList<ApplicationRevision>>() {
+			}.getType();
+			return new GsonBuilder().create().fromJson(responseString, listType);
+		} else {
+			throw new Fit2CloudException(responseString);
+		}
+	}
+
+
 	/**
 	 * 添加应用版本
 	 * 
@@ -1154,7 +1172,7 @@ public class Fit2CloudClient {
 	 * 
 	 * @param applicationId
 	 *            应用ID
-	 * @param applicationRevisionId
+	 * @param applicationRevisionid
 	 *            应用版本ID
 	 * @param clusterName
 	 *            集群名称
@@ -1180,7 +1198,7 @@ public class Fit2CloudClient {
 	 * 
 	 * @param applicationId
 	 *            应用ID
-	 * @param applicationRevisionId
+	 * @param applicationRevisionid
 	 *            应用版本ID
 	 * @param clusterName
 	 *            集群名称
@@ -2017,11 +2035,6 @@ public class Fit2CloudClient {
 
 	/**
 	 * 获取指定监控项的端口监控信息(端口监控间隔时间为5分钟）
-	 * 
-	 * @param pageSize
-	 *            分页大小,(可选,默认9999)
-	 * @param pageNum
-	 *            分页编号,(可选,默认1)
 	 * @return
 	 * @throws Fit2CloudException
 	 */
