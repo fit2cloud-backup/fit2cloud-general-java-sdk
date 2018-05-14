@@ -1087,6 +1087,69 @@ public class Fit2CloudClient {
 	}
 
 	/**
+	 * 添加应用接口
+	 * @param appName
+	 * @param description
+	 * @param type
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public Application addApplication(String appName, String description, String type
+													  ) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/deploy/app/add.json");
+		request.addBodyParameter("appName", appName);
+		request.addBodyParameter("description", description);
+		request.addBodyParameter("type", type);
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code == 200) {
+			return new GsonBuilder().create().fromJson(responseString, Application.class);
+		} else {
+			throw new Fit2CloudException(response.getBody());
+		}
+	}
+
+	/**
+	 * 添加仓库接口
+	 * @param name
+	 * @param accessId
+	 * @param accessPassword
+	 * @param repo
+	 * @param server
+	 * @param type
+	 * @param status
+	 * @return
+	 * @throws Fit2CloudException
+	 */
+	public ApplicationRepo addAppRepo(String name, String accessId, String accessPassword, String repo, String server, String type, String status
+	) throws Fit2CloudException {
+		OAuthRequest request = new OAuthRequest(Verb.POST, restApiEndpoint + "/deploy/app/repo/add.json");
+		request.addBodyParameter("name", name);
+		request.addBodyParameter("accessId", accessId);
+		request.addBodyParameter("accessPassword", accessPassword);
+		request.addBodyParameter("repo", repo);
+		request.addBodyParameter("server", server);
+		request.addBodyParameter("type", type);
+		request.addBodyParameter("status", status);
+		request.setCharset("UTF-8");
+		Token accessToken = new Token("", "");
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		int code = response.getCode();
+		String responseString = response.getBody();
+		if (code == 200) {
+			return new GsonBuilder().create().fromJson(responseString, ApplicationRepo.class);
+		} else {
+			throw new Fit2CloudException(response.getBody());
+		}
+	}
+
+
+	/**
 	 * 添加代码部署任务
 	 * 
 	 * @param applicationName
