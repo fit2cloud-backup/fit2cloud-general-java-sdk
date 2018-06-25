@@ -1,7 +1,7 @@
 package com.fit2cloud.sdk;
 
 
-import com.google.gson.JsonObject;
+import com.domain.Result;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
 import org.scribe.model.Verb;
@@ -22,14 +22,14 @@ public class Fit2CloudClient {
 		int code = response.getCode();
 		String responseString = response.getBody();
 		if (code == 200) {
-			JsonObject result = new JsonObject();
-			result.addProperty("resultCode",true);
-			result.addProperty("message","修改成功！");
+			Result result = new Result();
+			result.setResultCode(true);
+			result.setMessage("修改成功！");
 			return  result;
 		} else {
-			JsonObject result = new JsonObject();
-			result.addProperty("resultCode",false);
-			result.addProperty("message",responseString);
+			Result result = new Result();
+			result.setResultCode(false);
+			result.setMessage(responseString);
 			return result;
 		}
 	}
