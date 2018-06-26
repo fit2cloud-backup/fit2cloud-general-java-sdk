@@ -1,5 +1,6 @@
 package com.fit2cloud.tools;
 
+import com.Utils.MD5Util;
 import com.domain.Result;
 import com.fit2cloud.sdk.Fit2CloudClient;
 import com.fit2cloud.sdk.Fit2CloudException;
@@ -46,9 +47,12 @@ public class UpdateUserPasswordUtils {
             result.setMessage("更新md5密码参数为空！" );
             System.out.println(result);
         }
+        String md5Pwd_old = MD5Util.MD5(oldPassword);
+        String md5Pwd_new = MD5Util.MD5(newPassword);
+
         try {
             Fit2CloudClient fit2CloudClient = new Fit2CloudClient();
-            Object result = fit2CloudClient.updatePassword(restApiEndpoint, userName, oldPassword, newPassword);
+            Object result = fit2CloudClient.updatePassword(restApiEndpoint, userName, md5Pwd_old, md5Pwd_new);
             System.out.println(result);
         }catch (Exception e){
             Result result = new Result();
